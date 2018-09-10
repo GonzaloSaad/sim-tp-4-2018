@@ -1,6 +1,5 @@
 package utn.frc.sim.battleship;
 
-import javafx.geometry.Point2D;
 import javafx.scene.Parent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -19,6 +18,9 @@ public class Board extends Parent {
     public static final int BOARD_WIDTH = 64;
 
     private List<Ship> ships;
+    private int shots;
+    private int hits;
+    private int health;
     private VBox rows = new VBox();
 
     public Board() {
@@ -35,14 +37,17 @@ public class Board extends Parent {
         }
         getChildren().add(rows);
         ships = new ArrayList<>();
+        hits = 0;
+        shots = 0;
+        health = 0;
     }
 
     public boolean placeShip(Ship ship) {
         if (canPlaceShip(ship)) {
             int x = ship.getX();
             int y = ship.getY();
-            Cell cellForShip = getCell(x, y);
-            cellForShip.setShip(ship);
+            placeShipInAllCells(ship);
+            health += ship.getType().getLength();
             ships.add(ship);
             return true;
         }
@@ -50,12 +55,21 @@ public class Board extends Parent {
         return false;
     }
 
-    //TODO go to all of the shipssss!!!!!
     private void placeShipInAllCells(Ship ship){
-        int x = ship.getX();
-        int y = ship.getY();
-        Cell cellForShip = getCell(x, y);
-        cellForShip.setShip(ship);
+        switch (ship.getOrientation()){
+            case EAST:
+                eastPlace(ship);
+                break;
+            case WEST:
+                westPlace(ship);
+                break;
+            case NORTH:
+                northPlace(ship);
+                break;
+            case SOUTH:
+                southPlace(ship);
+                break;
+        }
     }
 
     private boolean canPlaceShip(Ship ship) {
@@ -75,6 +89,95 @@ public class Board extends Parent {
         return Boolean.FALSE;
     }
 
+    public ShotResult handleShot(int x, int y){
+        if(isValidPoint(x,y)){
+            Cell cell = getCell(x,y);
+            return cell.shoot();
+        }
+        throw new RuntimeException();
+    }
+
+    public boolean isAlive(){
+        return health >0;
+    }
+
+    public boolean wasShot(int x, int y){
+        if(isValidPoint(x,y)){
+            Cell cell = getCell(x,y);
+            return cell.wasShot();
+        }
+        return Boolean.FALSE;
+    }
+
+    private Cell getCell(int x, int y) {
+        return (Cell) ((HBox) rows.getChildren().get(y)).getChildren().get(x);
+    }
+
+    private boolean isValidPoint(int x, int y) {
+        return isValidX(x) && isValidY(y);
+    }
+
+    private boolean isValidX(double x) {
+        return x >= 0 && x < BOARD_WIDTH;
+    }
+
+    private boolean isValidY(double y) {
+        return y >= 0 && y < BOARD_HEIGHT;
+    }
+
+    private void northPlace(Ship ship) {
+
+        int y = ship.getY();
+        int x = ship.getX();
+        int length = ship.getType().getLength();
+
+        for (int i = y; i < y + length; i++) {
+            if (isValidY(i)) {
+                Cell cell = getCell(x, i);
+                cell.setShip(ship);
+            }
+        }
+    }
+
+    private void southPlace(Ship ship) {
+        int y = ship.getY();
+        int x = ship.getX();
+        int length = ship.getType().getLength();
+
+        for (int i = y - length + 1; i <= y; i++) {
+            if (isValidY(i)) {
+                Cell cell = getCell(x, i);
+                cell.setShip(ship);
+            }
+        }
+    }
+
+    private void eastPlace(Ship ship) {
+        int y = ship.getY();
+        int x = ship.getX();
+        int length = ship.getType().getLength();
+
+        for (int i = x; i < x + length; i++) {
+            if (isValidX(i)) {
+                Cell cell = getCell(i, y);
+                cell.setShip(ship);
+            }
+        }
+    }
+
+    private void westPlace(Ship ship) {
+        int y = ship.getY();
+        int x = ship.getX();
+        int length = ship.getType().getLength();
+
+        for (int i = x - length + 1; i <= x; i++) {
+            if (isValidX(i)) {
+                Cell cell = getCell(i, y);
+                cell.setShip(ship);
+            }
+        }
+    }
+
     private boolean canBeNorthPlaced(Ship ship) {
 
         int y = ship.getY();
@@ -87,6 +190,8 @@ public class Board extends Parent {
                 if (cell.hasShip()) {
                     return false;
                 }
+            }else{
+                return false;
             }
         }
         return true;
@@ -103,6 +208,8 @@ public class Board extends Parent {
                 if (cell.hasShip()) {
                     return false;
                 }
+            } else{
+                return false;
             }
         }
         return true;
@@ -131,31 +238,17 @@ public class Board extends Parent {
         int x = ship.getX();
         int length = ship.getType().getLength();
 
-        for (int i = x + length + 1; i <= x; i++) {
+        for (int i = x - length + 1; i <= x; i++) {
             if (isValidX(i)) {
                 Cell cell = getCell(i, y);
                 if (cell.hasShip()) {
                     return false;
                 }
+            }else{
+                return false;
             }
         }
         return true;
-    }
-
-    private Cell getCell(int x, int y) {
-        return (Cell) ((HBox) rows.getChildren().get(y)).getChildren().get(x);
-    }
-
-    private boolean isValidPoint(double x, double y) {
-        return isValidX(x) && isValidY(y);
-    }
-
-    private boolean isValidX(double x) {
-        return x >= 0 && x < BOARD_WIDTH;
-    }
-
-    private boolean isValidY(double y) {
-        return y >= 0 && y < BOARD_HEIGHT;
     }
 
     public class Cell extends Rectangle {
@@ -174,35 +267,50 @@ public class Board extends Parent {
             this.y = y;
             setFill(Color.LIGHTGRAY);
             setStroke(Color.BLACK);
-            setOnMouseClicked(event -> shoot());
+            //setOnMouseClicked(event -> shoot());
         }
 
-        public void setShip(Ship ship) {
+        private void setShip(Ship ship) {
             this.ship = ship;
-            setFill(Color.WHITE);
-            setStroke(Color.GREEN);
+            setFill(Color.GREEN);
+            //setStroke(Color.GREEN);
         }
 
-        public boolean hasShip() {
+        private boolean hasShip() {
             return ship != null;
         }
 
-        public ShotResult shoot() {
+        private boolean wasShot(){
+            return wasShot;
+        }
+
+        private ShotResult shoot() {
             ShotResult result = ShotResult.MISS;
             if (!wasShot) {
+                shots++;
                 wasShot = true;
                 if (ship != null) {
-                    ship.hit();
-                    setFill(Color.RED);
-                    result = ShotResult.HIT;
-                    System.out.println("hitted");
+                    if (ship.isAlive()){
+                        ship.hit();
+                        hits++;
+                        health--;
+                        setFill(Color.RED);
+                        if(ship.isAlive()){
+                            result = ShotResult.HIT;
+                        } else{
+                            result = ShotResult.DESTROYED;
+                        }
+                    }
                 } else {
                     setFill(Color.BLACK);
                 }
             }
+            System.out.println(result);
             return result;
         }
-
-
     }
+
+
+
+
 }
