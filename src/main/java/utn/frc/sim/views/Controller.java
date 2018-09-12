@@ -1,4 +1,4 @@
-package utn.frc.sim.sample;
+package utn.frc.sim.views;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;

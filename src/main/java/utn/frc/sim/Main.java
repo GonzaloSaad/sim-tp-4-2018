@@ -1,4 +1,4 @@
-package utn.frc.sim.sample;
+package utn.frc.sim;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -8,17 +8,14 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import utn.frc.sim.battleship.BattleShip;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
 
-        Parent root = FXMLLoader.load(getClass().getResource("/sample.fxml"));
-        primaryStage.setTitle("Hello World");
-        primaryStage.setScene(new Scene(root, 1024, 728));
+        Parent root = FXMLLoader.load(getClass().getResource("/views/menu/main-menu.fxml"));
+        primaryStage.setTitle("Battleship");
+        primaryStage.setScene(new Scene(root, 1200, 600));
         primaryStage.setOnCloseRequest(e -> {Platform.exit(); System.exit(0);});
 
         primaryStage.show();
