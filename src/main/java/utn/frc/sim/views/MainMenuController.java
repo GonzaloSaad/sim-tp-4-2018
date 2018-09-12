@@ -47,7 +47,6 @@ public class MainMenuController {
      * Metodo que maneja el evento de click sobre
      * la opcion de volver a pantalla de info.
      *
-     * @param event
      */
     @FXML
     void openEssayInfoDialog(ActionEvent event) {
@@ -61,9 +60,9 @@ public class MainMenuController {
      **/
     private void setSemiAutomaticDialog() {
         try {
-            mainPane.getChildren().setAll((AnchorPane) FXMLLoader.load(getClass().getResource("/view-generator.fxml")));
+            mainPane.getChildren().setAll((AnchorPane) FXMLLoader.load(getClass().getResource("/views/battleship/semi-automatic.fxml")));
         } catch (IOException e) {
-            logger.error("Problem opening semi automatic dialog.", e);
+            logger.error("Problem opening SemiAutomaticDialog.", e);
         }
     }
 
@@ -73,16 +72,17 @@ public class MainMenuController {
      */
     private void setAutomaticDialog() {
         try {
-            mainPane.getChildren().setAll((AnchorPane) FXMLLoader.load(getClass().getResource("/chi-cuadrado-test.fxml")));
+            mainPane.getChildren().setAll((AnchorPane) FXMLLoader.load(getClass().getResource("/views/battleship/automatic.fxml")));
         } catch (IOException e) {
-            logger.error("Problem opening chi cuadrado.", e);
+            logger.error("Problem opening AutomaticDialog.", e);
         }
     }
+
     private void setEssayInfoDialog() {
         try {
-            mainPane.getChildren().setAll((AnchorPane) FXMLLoader.load(getClass().getResource("/essay-info.fxml")));
+            mainPane.getChildren().setAll((AnchorPane) FXMLLoader.load(getClass().getResource("/views/menu/essay-info.fxml")));
         } catch (IOException e) {
-            logger.error("Problem opening main menu.", e);
+            logger.error("Problem opening EssayInfoDialog.", e);
         }
     }
 

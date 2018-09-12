@@ -1,13 +1,18 @@
 package utn.frc.sim.battleship;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import utn.frc.sim.battleship.game.Players;
 import utn.frc.sim.battleship.strategies.RandomStrategy;
+
+import java.util.Random;
 
 public class BattleShip {
 
+    private static final Logger logger = LogManager.getLogger(BattleShip.class);
     private Player player_1;
     private Player player_2;
-
-    int result;
+    private Players turn;
 
 
     public BattleShip() {
@@ -19,6 +24,11 @@ public class BattleShip {
         player_2 = new Player(new RandomStrategy());
         player_1.setEnemy(player_2);
         player_2.setEnemy(player_1);
+        turn = getRandomTurn();
+    }
+
+    private Players getRandomTurn() {
+        return Players.values()[new Random().nextInt(Players.values().length)];
     }
 
     public Board getBoardPlayer1() {
@@ -29,40 +39,64 @@ public class BattleShip {
         return player_2.getBoard();
     }
 
-    public int startGame() {
-        while (gameRunning()) {
-            player_1.play();
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            if(player_2.isAlive()){
-                player_2.play();
-            }
-        }
-        if (player2Alive()) {
-            System.out.println("Player 2 won.");
-            return 2;
-        } else{
-            System.out.println("Player 1 won.");
-            return 1;
-        }
-        /*System.out.println("player1 hits: "+ player_1.getHits());
-        System.out.println("player1 shots:" + player_1.getShots());
-        System.out.println("player2 hits: "+ player_2.getHits());
-        System.out.println("player2 shots: "+ player_2.getShots());*/
+    public Players runGame() {
+        return runGame(Boolean.FALSE);
     }
 
-    private boolean gameRunning() {
+    public Players runGame(boolean withDelay) {
+        while (gameRunning()) {
+            handleTurnsAndGames();
+            if (withDelay) {
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    logger.error("Error while sleeping thread");
+                }
+            }
+        }
+        return getWinner();
+
+    }
+
+    public boolean gameRunning() {
         return player1Alive() && player2Alive();
+    }
+
+    public void playOneTurn() {
+        handleTurnsAndGames();
+    }
+
+    private void handleTurnsAndGames() {
+        if (turn == Players.PLAYER_1) {
+            player1Turn();
+        } else {
+            player2Turn();
+        }
     }
 
     private boolean player1Alive() {
         return player_1.isAlive();
     }
 
-    private boolean player2Alive(){
+    private boolean player2Alive() {
         return player_2.isAlive();
+    }
+
+    private void player1Turn() {
+        player_1.play();
+        turn = Players.PLAYER_2;
+    }
+
+    private void player2Turn() {
+        player_2.play();
+        turn = Players.PLAYER_1;
+    }
+
+    public Players getWinner() {
+        if (player1Alive()) {
+            return Players.PLAYER_1;
+        } else {
+            return Players.PLAYER_2;
+        }
     }
 }

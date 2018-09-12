@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="views.Automatic"
-            prefHeight="400.0" prefWidth="600.0">
-
+<AnchorPane prefHeight="540.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="utn.frc.sim.views.battleship.AutomaticController">
+   <children>
+      <Label layoutX="54.0" layoutY="104.0" text="Player 1:" />
+      <Label layoutX="54.0" layoutY="128.0" text="Player 2:" />
+      <Label fx:id="lblP1" alignment="CENTER_RIGHT" layoutX="152.0" layoutY="104.0" prefHeight="17.0" prefWidth="56.0" text="0" />
+      <Label fx:id="lblP2" alignment="CENTER_RIGHT" layoutX="152.0" layoutY="128.0" prefHeight="17.0" prefWidth="56.0" text="0" />
+      <Label layoutX="52.0" layoutY="169.0" text="Ganador:" />
+      <Label fx:id="lblWinner" layoutX="129.0" layoutY="169.0" prefHeight="17.0" prefWidth="79.0" />
+      <Button layoutX="168.0" layoutY="233.0" mnemonicParsing="false" onAction="#btnRunClick" text="Run" />
+      <TextField fx:id="txtGames" layoutX="129.0" layoutY="200.0" prefHeight="17.0" prefWidth="79.0" />
+      <Label layoutX="52.0" layoutY="204.0" text="Partidas:" />
+   </children>
 </AnchorPane>

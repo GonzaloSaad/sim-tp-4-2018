@@ -7,6 +7,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import utn.frc.sim.battleship.BattleShip;
+import utn.frc.sim.battleship.game.Players;
 
 public class Main extends Application {
 
@@ -34,8 +35,8 @@ public class Main extends Application {
         int p2 = 0;
         for (int i = 0; i < 1000; i++) {
             System.out.println("Game: " + (i+1));
-            int result = new BattleShip().startGame();
-            if (result ==1){
+            Players result = new BattleShip().runGame();
+            if (result == Players.PLAYER_1){
                 p1++;
             }else {
                 p2++;

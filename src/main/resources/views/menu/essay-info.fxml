@@ -5,7 +5,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
-<AnchorPane prefHeight="528.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="utn.frc.sim.views.menu.MainMenuController">
+<AnchorPane prefHeight="528.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="utn.frc.sim.views.MainMenuController">
     <children>
         <Label layoutX="388.0" layoutY="239.0" prefHeight="35.0" prefWidth="249.0" text="Trabajo Práctico N° 1"
                textAlignment="CENTER" underline="true">
