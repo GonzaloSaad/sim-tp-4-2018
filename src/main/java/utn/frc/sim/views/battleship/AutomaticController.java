@@ -36,7 +36,7 @@ public class AutomaticController {
         runAllGamesService();
     }
 
-    private void runAllGamesService(){
+    private void runAllGamesService() {
         executorService = Executors.newFixedThreadPool(THREADS);
         executorService.submit(this::runAllGames);
     }
@@ -64,17 +64,16 @@ public class AutomaticController {
 
         final int p1 = p1Won;
         final int p2 = p2Won;
-        Platform.runLater(() -> setWinnerLabel(p1,p2));
+        Platform.runLater(() -> setWinnerLabel(p1, p2));
         executorService.shutdownNow();
-
     }
 
-    private void setWinnerLabel(int p1, int p2){
-        if(p1>p2){
+    private void setWinnerLabel(int p1, int p2) {
+        if (p1 > p2) {
             lblWinner.setText(PLAYER_1);
-        }else if(p2>p1){
+        } else if (p2 > p1) {
             lblWinner.setText(PLAYER_2);
-        } else{
+        } else {
             lblWinner.setText(TIE);
         }
     }

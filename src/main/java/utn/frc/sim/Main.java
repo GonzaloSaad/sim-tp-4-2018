@@ -12,37 +12,24 @@ import utn.frc.sim.battleship.game.Players;
 public class Main extends Application {
 
     @Override
-    public void start(Stage primaryStage) throws Exception{
+    public void start(Stage primaryStage) throws Exception {
 
         Parent root = FXMLLoader.load(getClass().getResource("/views/menu/main-menu.fxml"));
         primaryStage.setTitle("Battleship");
         primaryStage.setScene(new Scene(root, 1200, 600));
-        primaryStage.setOnCloseRequest(e -> {Platform.exit(); System.exit(0);});
+        primaryStage.setOnCloseRequest(e -> forceClose());
 
         primaryStage.show();
+    }
+
+    private static void forceClose() {
+        Platform.exit();
+        System.exit(0);
     }
 
 
     public static void main(String[] args) {
         launch(args);
-      /* ExecutorService service =  Executors.newFixedThreadPool(4);
-       service.submit(Main::run);*/
-
     }
 
-    private static void run(){
-        int p1 = 0;
-        int p2 = 0;
-        for (int i = 0; i < 1000; i++) {
-            System.out.println("Game: " + (i+1));
-            Players result = new BattleShip().runGame();
-            if (result == Players.PLAYER_1){
-                p1++;
-            }else {
-                p2++;
-            }
-        }
-        System.out.println(p1);
-        System.out.println(p2);
-    }
 }
