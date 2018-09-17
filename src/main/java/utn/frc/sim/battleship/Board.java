@@ -71,7 +71,7 @@ public class Board extends Parent {
         }
     }
 
-    private boolean canPlaceShip(Ship ship) {
+    public boolean canPlaceShip(Ship ship) {
 
         if (isValidPoint(ship.getX(), ship.getY())) {
             switch (ship.getOrientation()) {

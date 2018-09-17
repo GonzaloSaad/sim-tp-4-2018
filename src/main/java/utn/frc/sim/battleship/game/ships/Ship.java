@@ -46,21 +46,13 @@ public class Ship extends Parent {
         return orientation;
     }
 
-   /* public boolean isNorthOriented(){
-        return orientation == Orientation.NORTH;
+    public boolean isVertical(){
+        return orientation == Orientation.NORTH || orientation==Orientation.SOUTH;
     }
 
-    public boolean isSouOriented(){
-        return orientation == Orientation.NORTH;
+    public boolean isHorizontal(){
+        return orientation == Orientation.EAST || orientation==Orientation.WEST;
     }
-
-    public boolean isNorthOriented(){
-        return orientation == Orientation.NORTH;
-    }
-
-    public boolean isNorthOriented(){
-        return orientation == Orientation.NORTH;
-    }*/
 
     @Override
     public String toString() {
