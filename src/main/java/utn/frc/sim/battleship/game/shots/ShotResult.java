@@ -1,4 +1,4 @@
-package utn.frc.sim.battleship.game;
+package utn.frc.sim.battleship.game.shots;
 
 public enum ShotResult {
     MISS,

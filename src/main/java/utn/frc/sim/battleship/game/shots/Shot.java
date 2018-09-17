@@ -1,4 +1,4 @@
-package utn.frc.sim.battleship.game;
+package utn.frc.sim.battleship.game.shots;
 
 public class Shot {
     private final int x;

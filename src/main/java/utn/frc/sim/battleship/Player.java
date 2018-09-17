@@ -1,6 +1,6 @@
 package utn.frc.sim.battleship;
 
-import utn.frc.sim.battleship.game.ShotResult;
+import utn.frc.sim.battleship.game.shots.ShotResult;
 import utn.frc.sim.battleship.strategies.BattleShipStrategy;
 
 public class Player {

@@ -5,8 +5,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import utn.frc.sim.battleship.game.Ship;
-import utn.frc.sim.battleship.game.ShotResult;
+import utn.frc.sim.battleship.game.ships.Ship;
+import utn.frc.sim.battleship.game.shots.ShotResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +16,7 @@ public class Board extends Parent {
 
     public static final int BOARD_HEIGHT = 32;
     public static final int BOARD_WIDTH = 64;
+    private static final int CELL_SIZE = 8;
 
     private List<Ship> ships;
     private int shots;
@@ -44,8 +45,6 @@ public class Board extends Parent {
 
     public boolean placeShip(Ship ship) {
         if (canPlaceShip(ship)) {
-            int x = ship.getX();
-            int y = ship.getY();
             placeShipInAllCells(ship);
             health += ship.getType().getLength();
             ships.add(ship);
@@ -55,8 +54,8 @@ public class Board extends Parent {
         return false;
     }
 
-    private void placeShipInAllCells(Ship ship){
-        switch (ship.getOrientation()){
+    private void placeShipInAllCells(Ship ship) {
+        switch (ship.getOrientation()) {
             case EAST:
                 eastPlace(ship);
                 break;
@@ -89,21 +88,21 @@ public class Board extends Parent {
         return Boolean.FALSE;
     }
 
-    public ShotResult handleShot(int x, int y){
-        if(isValidPoint(x,y)){
-            Cell cell = getCell(x,y);
+    public ShotResult handleShot(int x, int y) {
+        if (isValidPoint(x, y)) {
+            Cell cell = getCell(x, y);
             return cell.shoot();
         }
         throw new RuntimeException();
     }
 
-    public boolean isAlive(){
-        return health >0;
+    public boolean isAlive() {
+        return health > 0;
     }
 
-    public boolean wasShot(int x, int y){
-        if(isValidPoint(x,y)){
-            Cell cell = getCell(x,y);
+    public boolean wasShot(int x, int y) {
+        if (isValidPoint(x, y)) {
+            Cell cell = getCell(x, y);
             return cell.wasShot();
         }
         return Boolean.FALSE;
@@ -126,7 +125,6 @@ public class Board extends Parent {
     }
 
     private void northPlace(Ship ship) {
-
         int y = ship.getY();
         int x = ship.getX();
         int length = ship.getType().getLength();
@@ -190,7 +188,7 @@ public class Board extends Parent {
                 if (cell.hasShip()) {
                     return false;
                 }
-            }else{
+            } else {
                 return false;
             }
         }
@@ -208,7 +206,7 @@ public class Board extends Parent {
                 if (cell.hasShip()) {
                     return false;
                 }
-            } else{
+            } else {
                 return false;
             }
         }
@@ -244,21 +242,21 @@ public class Board extends Parent {
                 if (cell.hasShip()) {
                     return false;
                 }
-            }else{
+            } else {
                 return false;
             }
         }
         return true;
     }
 
-    public class Cell extends Rectangle {
+    private class Cell extends Rectangle {
         private int x, y;
         private Ship ship;
         private boolean wasShot = false;
 
 
         private Cell(int x, int y) {
-            super(10, 10);
+            super(CELL_SIZE, CELL_SIZE);
             initCell(x, y);
         }
 
@@ -267,20 +265,18 @@ public class Board extends Parent {
             this.y = y;
             setFill(Color.LIGHTGRAY);
             setStroke(Color.BLACK);
-            //setOnMouseClicked(event -> shoot());
         }
 
         private void setShip(Ship ship) {
             this.ship = ship;
             setFill(Color.GREEN);
-            //setStroke(Color.GREEN);
         }
 
         private boolean hasShip() {
             return ship != null;
         }
 
-        private boolean wasShot(){
+        private boolean wasShot() {
             return wasShot;
         }
 
@@ -290,14 +286,14 @@ public class Board extends Parent {
                 shots++;
                 wasShot = true;
                 if (ship != null) {
-                    if (ship.isAlive()){
+                    if (ship.isAlive()) {
                         ship.hit();
                         hits++;
                         health--;
                         setFill(Color.RED);
-                        if(ship.isAlive()){
+                        if (ship.isAlive()) {
                             result = ShotResult.HIT;
-                        } else{
+                        } else {
                             result = ShotResult.DESTROYED;
                         }
                     }
@@ -305,12 +301,9 @@ public class Board extends Parent {
                     setFill(Color.BLACK);
                 }
             }
-            //System.out.println(result);
             return result;
         }
     }
-
-
 
 
 }

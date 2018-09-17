@@ -1,12 +1,10 @@
 package utn.frc.sim.battleship.strategies;
 
 import utn.frc.sim.battleship.Board;
-import utn.frc.sim.battleship.game.Ship;
-import utn.frc.sim.battleship.game.ShotResult;
+import utn.frc.sim.battleship.game.ships.Ship;
+import utn.frc.sim.battleship.game.shots.ShotResult;
 import utn.frc.sim.battleship.game.ships.Orientation;
 import utn.frc.sim.battleship.game.ships.ShipType;
-
-import java.util.Random;
 
 public class RandomStrategy extends BaseStrategy {
 

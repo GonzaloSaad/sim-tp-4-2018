@@ -1,4 +1,4 @@
-package utn.frc.sim.battleship.game;
+package utn.frc.sim.battleship.game.ships;
 
 import javafx.scene.Parent;
 import utn.frc.sim.battleship.game.ships.Orientation;
