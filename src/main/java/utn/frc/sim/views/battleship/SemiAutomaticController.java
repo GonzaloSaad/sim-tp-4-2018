@@ -71,7 +71,7 @@ public class SemiAutomaticController {
     }
 
     private void runGameToEnd() {
-        battleShip.runGame();
+        battleShip.runGame(true);
         Platform.runLater(this::setWinnerState);
         executorService.shutdown();
     }

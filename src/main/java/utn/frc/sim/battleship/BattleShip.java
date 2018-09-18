@@ -3,6 +3,7 @@ package utn.frc.sim.battleship;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import utn.frc.sim.battleship.game.Players;
+import utn.frc.sim.battleship.strategies.CIDSDestroyer;
 import utn.frc.sim.battleship.strategies.RandomStrategy;
 
 import java.util.Random;
@@ -20,7 +21,7 @@ public class BattleShip {
     }
 
     private void initGame() {
-        player_1 = new Player(new RandomStrategy());
+        player_1 = new Player(new CIDSDestroyer());
         player_2 = new Player(new RandomStrategy());
         player_1.setEnemy(player_2);
         player_2.setEnemy(player_1);
@@ -48,7 +49,7 @@ public class BattleShip {
             handleTurnsAndGames();
             if (withDelay) {
                 try {
-                    Thread.sleep(10);
+                    Thread.sleep(50);
                 } catch (InterruptedException e) {
                     logger.error("Error while sleeping thread");
                 }
