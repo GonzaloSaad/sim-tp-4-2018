@@ -5,6 +5,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import utn.frc.sim.battleship.BattleShip;
 import utn.frc.sim.battleship.game.Players;
 
@@ -17,6 +19,8 @@ public class AutomaticController {
     private static final String PLAYER_2 = "Player 2";
     private static final String TIE = "Empate";
     private static final int THREADS = Runtime.getRuntime().availableProcessors();
+    private static final Logger logger = LogManager.getLogger(AutomaticController.class);
+
     private ExecutorService executorService;
 
     @FXML
@@ -46,8 +50,11 @@ public class AutomaticController {
 
         int p1Won = 0;
         int p2Won = 0;
+        double player1Accuracy = 0;
+        double player2Accuracy = 0;
 
-        for (int i = 0; i < amountOfGames; i++) {
+        for (int i = 1; i <= amountOfGames; i++) {
+            logger.info("Game: {}.", i);
             BattleShip battleShip = new BattleShip();
             Players winner = battleShip.runGame();
 
@@ -60,7 +67,19 @@ public class AutomaticController {
                 final int player2 = p2Won;
                 Platform.runLater(() -> setLblP2(player2));
             }
+
+            if (i==1){
+                player1Accuracy = battleShip.getPlayer1Accuracy();
+                player2Accuracy = battleShip.getPlayer2Accuracy();
+            } else {
+                player1Accuracy = ((double)1/i) * ((i -1) * player1Accuracy + battleShip.getPlayer1Accuracy());
+                player2Accuracy = ((double)1/i) * ((i -1) * player2Accuracy + battleShip.getPlayer2Accuracy());
+            }
         }
+
+        logger.info("Player 1 accuracy: {}.", player1Accuracy*100);
+        logger.info("Player 2 accuracy: {}.", player2Accuracy*100);
+
 
         final int p1 = p1Won;
         final int p2 = p2Won;

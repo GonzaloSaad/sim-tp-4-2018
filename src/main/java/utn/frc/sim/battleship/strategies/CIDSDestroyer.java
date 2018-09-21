@@ -1,27 +1,36 @@
 package utn.frc.sim.battleship.strategies;
 
 import utn.frc.sim.battleship.Board;
-import utn.frc.sim.battleship.game.ships.Orientation;
-import utn.frc.sim.battleship.game.ships.Ship;
-import utn.frc.sim.battleship.game.ships.ShipType;
+import utn.frc.sim.battleship.game.exceptions.ConcurrentFailureException;
 import utn.frc.sim.battleship.game.shots.Shot;
 import utn.frc.sim.battleship.game.shots.ShotResult;
 
-import javax.xml.transform.Result;
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
+import java.util.Random;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 public class CIDSDestroyer extends RandomStrategy {
 
     private static final int HIT_SHOT_SCALE = 40;
-    private static final int[] NEIGHBORS_INDEX_ADJUSTMENT = new int[]{-1, 0, 1};
+    private static final int X_HALF_BOARD = Board.BOARD_WIDTH / 2;
+    private static final int Y_HALF_BOARD = Board.BOARD_HEIGHT / 2;
+    private static final int REGION_1 = 0;
+    private static final int REGION_2 = 1;
+    private static final int REGION_3 = 2;
+    private static final int REGION_4 = 3;
+    private static final int[] NEIGHBORS_INDEX_ADJUSTMENT_HUNTING = new int[]{-1, 0, 1};
+
+
     private PossibleShot[][] possibleShots;
+    private List<RegionOfShooting> regions;
     private List<Shot> hits;
     private State state;
+    private Random random;
+    private boolean randomFromRegions;
 
     public CIDSDestroyer() {
         super();
@@ -29,36 +38,82 @@ public class CIDSDestroyer extends RandomStrategy {
     }
 
     private void initialize() {
-        startShots();
+        random = new Random();
+        randomFromRegions = true;
+        startHits();
+        startState();
+        startRegionOfShooting();
+        startPossibleShots();
     }
 
-    private void startShots() {
+    private void startHits() {
         hits = new ArrayList<>();
+    }
+
+    private void startState() {
         state = State.RANDOM;
+    }
+
+    private void startRegionOfShooting() {
+        regions = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            regions.add(new RegionOfShooting());
+        }
+    }
+
+    private void startPossibleShots() {
         possibleShots = new PossibleShot[Board.BOARD_WIDTH][Board.BOARD_HEIGHT];
         for (int i = 0; i < Board.BOARD_HEIGHT; i++) {
             for (int j = 0; j < Board.BOARD_WIDTH; j++) {
                 PossibleShot shot = new PossibleShot(j, i, 1);
                 possibleShots[j][i] = shot;
+                if ((i % 2 == 0 && j % 2 == 0) || (i % 2 != 0 && j % 2 != 0)) {
+                    addShotToRegion(shot);
+                }
+            }
+        }
+    }
+
+    private void addShotToRegion(PossibleShot shot) {
+        getRegionOfShot(shot).addPossibleShot(shot);
+    }
+
+    private RegionOfShooting getRegionOfShot(PossibleShot shot) {
+        int region = getRegionIndexOfShot(shot);
+        return regions.get(region);
+    }
+
+    private int getRegionIndexOfShot(PossibleShot shot) {
+        int x = shot.getX();
+        int y = shot.getY();
+        if (x < X_HALF_BOARD) {
+            if (y < Y_HALF_BOARD) {
+                return REGION_1;
+            } else {
+                return REGION_2;
+            }
+        } else {
+            if (y < Y_HALF_BOARD) {
+                return REGION_3;
+            } else {
+                return REGION_4;
             }
         }
     }
 
     @Override
     public ShotResult getNextShot() {
-        try {
-            PossibleShot shot = getBestPossibleShot();
-            shot.use();
-            ShotResult result = getEnemyBoard().handleShot(shot.getX(), shot.getY());
-            addShotIfHits(result, shot);
-            handleStateChange(result);
-            return result;
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException();
-        }
+        PossibleShot shot = getBestPossibleShot();
+        shot.use();
+        ShotResult result = getEnemyBoard().handleShot(shot.getX(), shot.getY());
+        addResultToRegion(result, shot);
+        addShotIfHits(result, shot);
+        handleStateChange(result);
+        return result;
+    }
 
-
+    private void addResultToRegion(ShotResult result, PossibleShot shot) {
+        getRegionOfShot(shot).addShot(result != ShotResult.MISS);
     }
 
     private void handleStateChange(ShotResult result) {
@@ -80,26 +135,6 @@ public class CIDSDestroyer extends RandomStrategy {
         }
     }
 
-    private void updateProbabilities() {
-        for (int i = 0; i < Board.BOARD_HEIGHT; i++) {
-            for (int j = 0; j < Board.BOARD_WIDTH; j++) {
-                PossibleShot shot = possibleShots[j][i];
-                if (shot.isAvailable()) {
-                    shot.setWeight(1);
-                    for (ShipType type : ShipType.values()) {
-                        for (Orientation orientation : Orientation.values()) {
-                            Ship ship = new Ship(shot.getX(), shot.getY(), type, orientation);
-                            updateProbabilitiesForShip(ship);
-                        }
-                    }
-                } else {
-                    shot.setWeight(0);
-                }
-            }
-        }
-        increaseProbabilitiesForHits();
-    }
-
     private void increaseProbabilitiesForHits() {
         hits.stream()
                 .map(this::getNeighbors)
@@ -109,15 +144,93 @@ public class CIDSDestroyer extends RandomStrategy {
 
     }
 
+    private PossibleShot getBestPossibleShot() {
+
+        if (state == State.HUNTING) {
+            return getBestPossibleHuntingShot();
+        } else {
+            return getBestPossibleRandomShot();
+        }
+    }
+
+
+    private PossibleShot getBestPossibleRandomShot() {
+        if (randomFromRegions) {
+            try {
+                return getPossibleShotFromRegions();
+            } catch (IllegalStateException e) {
+                randomFromRegions = false;
+            }
+        }
+
+        return lookForUnusedShot();
+
+
+    }
+
+    private PossibleShot getPossibleShotFromRegions() {
+        PossibleShot possibleShot;
+        int count = 0;
+        do {
+            RegionOfShooting region;
+            int regionCount = 0;
+            do {
+                region = regions.get(random.nextInt(regions.size()));
+                regionCount++;
+                if (regionCount > 150) {
+                    throw new IllegalStateException();
+                }
+            } while (region.empty());
+            possibleShot = region.getPossibleShot();
+            count++;
+            if (count > 150) {
+                throw new IllegalStateException();
+            }
+        } while (possibleShot.isUsed());
+        return possibleShot;
+    }
+
+
+    private PossibleShot lookForUnusedShot() {
+        for (int i = 0; i < Board.BOARD_HEIGHT; i++) {
+            for (int j = 0; j < Board.BOARD_WIDTH; j++) {
+                PossibleShot shot = possibleShots[j][i];
+                if (shot.isAvailable()) {
+                    return shot;
+                }
+            }
+        }
+        throw new ConcurrentFailureException();
+    }
+
+
+    private PossibleShot getBestPossibleHuntingShot() {
+        TreeSet<PossibleShot> orderedShots = new TreeSet<>();
+        for (int i = 0; i < Board.BOARD_HEIGHT; i++) {
+            for (int j = 0; j < Board.BOARD_WIDTH; j++) {
+                PossibleShot shot = possibleShots[j][i];
+                if (shot.isAvailable()) {
+                    orderedShots.add(shot);
+                }
+            }
+        }
+        if (orderedShots.isEmpty()) {
+            throw new ConcurrentFailureException();
+        }
+        return orderedShots.pollFirst();
+    }
+
     private List<PossibleShot> getNeighbors(Shot shot) {
         List<PossibleShot> neighbors = new ArrayList<>();
-        for (int i : NEIGHBORS_INDEX_ADJUSTMENT) {
-            for (int j : NEIGHBORS_INDEX_ADJUSTMENT) {
+        for (int i : NEIGHBORS_INDEX_ADJUSTMENT_HUNTING) {
+            for (int j : NEIGHBORS_INDEX_ADJUSTMENT_HUNTING) {
                 if (!(i == 0 && j == 0)) {
-                    int x = shot.getX() + i;
-                    int y = shot.getY() + j;
-                    if (isValid(x, y)) {
-                        neighbors.add(possibleShots[x][y]);
+                    if (i == 0 || j == 0) {
+                        int x = shot.getX() + i;
+                        int y = shot.getY() + j;
+                        if (isValid(x, y)) {
+                            neighbors.add(possibleShots[x][y]);
+                        }
                     }
                 }
             }
@@ -128,117 +241,6 @@ public class CIDSDestroyer extends RandomStrategy {
 
     private boolean isValid(int x, int y) {
         return x >= 0 && x < Board.BOARD_WIDTH && y >= 0 && y < Board.BOARD_HEIGHT;
-    }
-
-    private void updateProbabilitiesForShip(Ship ship) {
-        switch (ship.getOrientation()) {
-            case EAST:
-                eastUpdate(ship);
-                break;
-            case WEST:
-                westUpdate(ship);
-                break;
-            case NORTH:
-                northUpdate(ship);
-                break;
-            case SOUTH:
-                southUpdate(ship);
-                break;
-        }
-    }
-
-    private void northUpdate(Ship ship) {
-        int y = ship.getY();
-        int x = ship.getX();
-        int length = ship.getType().getLength();
-
-        for (int i = y; i < y + length; i++) {
-            if (!isValid(x, i) || possibleShots[x][i].isUsed()) {
-                return;
-            }
-        }
-
-        for (int i = y; i < y + length; i++) {
-            PossibleShot shot = possibleShots[x][i];
-            if (shot.isAvailable()) {
-                shot.increaseWeight();
-            }
-        }
-    }
-
-    private void southUpdate(Ship ship) {
-        int y = ship.getY();
-        int x = ship.getX();
-        int length = ship.getType().getLength();
-
-        for (int i = y - length + 1; i <= y; i++) {
-            if (!isValid(x, i) || possibleShots[x][i].isUsed()) {
-                return;
-            }
-        }
-
-        for (int i = y - length + 1; i <= y; i++) {
-            PossibleShot shot = possibleShots[x][i];
-            if (shot.isAvailable()) {
-                shot.increaseWeight();
-            }
-        }
-    }
-
-    private void eastUpdate(Ship ship) {
-        int y = ship.getY();
-        int x = ship.getX();
-        int length = ship.getType().getLength();
-
-        for (int i = x; i < x + length; i++) {
-            if (!isValid(i, y) || possibleShots[i][y].isAvailable()) {
-                return;
-            }
-        }
-
-        for (int i = x; i < x + length; i++) {
-            PossibleShot shot = possibleShots[i][y];
-            if (shot.isAvailable()) {
-                shot.increaseWeight();
-            }
-        }
-    }
-
-    private void westUpdate(Ship ship) {
-        int y = ship.getY();
-        int x = ship.getX();
-        int length = ship.getType().getLength();
-
-        for (int i = x - length + 1; i <= x; i++) {
-            if (!isValid(i, y) || possibleShots[i][y].isAvailable()) {
-                return;
-            }
-        }
-
-        for (int i = x - length + 1; i <= x; i++) {
-            PossibleShot shot = possibleShots[i][y];
-            if (shot.isAvailable()) {
-                shot.increaseWeight();
-            }
-        }
-    }
-
-    private PossibleShot getBestPossibleShot() {
-
-        if (state == State.HUNTING){
-            TreeSet<PossibleShot> orderedShots = new TreeSet<>();
-            for (int i = 0; i < Board.BOARD_HEIGHT; i++) {
-                for (int j = 0; j < Board.BOARD_WIDTH; j++) {
-                    PossibleShot shot = possibleShots[j][i];
-                    if (shot.isAvailable()) {
-                        orderedShots.add(shot);
-                    }
-                }
-            }
-            return orderedShots.pollFirst();
-        } else {
-            return possibleShots[getRandomX()][getRandomY()];
-        }
     }
 
     private enum State {
@@ -252,50 +254,38 @@ public class CIDSDestroyer extends RandomStrategy {
         int y;
         boolean used;
 
-        public PossibleShot(int x, int y) {
-            this(x, y, 0);
-        }
-
-        public PossibleShot(int x, int y, int weight) {
+        private PossibleShot(int x, int y, int weight) {
             this.weight = weight;
             this.x = x;
             this.y = y;
             this.used = false;
         }
 
-        public int getWeight() {
+        private int getWeight() {
             return weight;
         }
 
-        public void setWeight(int weight) {
-            this.weight = weight;
-        }
-
-        public void scaleWeight(int factor) {
+        private void scaleWeight(int factor) {
             weight *= factor;
         }
 
-        public void increaseWeight() {
-            weight++;
-        }
-
-        public boolean isUsed() {
+        private boolean isUsed() {
             return used;
         }
 
-        public boolean isAvailable() {
+        private boolean isAvailable() {
             return !used;
         }
 
-        public void use() {
+        private void use() {
             used = true;
         }
 
-        public int getX() {
+        private int getX() {
             return x;
         }
 
-        public int getY() {
+        private int getY() {
             return y;
         }
 
@@ -319,19 +309,87 @@ public class CIDSDestroyer extends RandomStrategy {
         }
     }
 
-    private String printMatrix() {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < Board.BOARD_HEIGHT; i++) {
-            for (int j = 0; j < Board.BOARD_WIDTH; j++) {
-                PossibleShot shot = possibleShots[j][i];
-                stringBuilder.append(shot.getWeight());
-                stringBuilder.append("\t");
+    private class RegionOfShooting {
+        private List<PossibleShot> shotsForExploring;
+        private int hits;
+        private int shots;
 
-            }
-            stringBuilder.append("\n");
+        public RegionOfShooting() {
+            shotsForExploring = new ArrayList<>();
+            hits = 0;
+            shots = 0;
         }
-        return stringBuilder.toString();
+
+        public void addPossibleShot(PossibleShot shot) {
+            shotsForExploring.add(shot);
+        }
+
+        public PossibleShot getPossibleShot() {
+            return shotsForExploring.get(random.nextInt(shotsForExploring.size()));
+        }
+
+        public double getRatioOfHits() {
+            if (shots == 0) {
+                return 0;
+            }
+            return (double) hits / shots;
+        }
+
+        public void addShot(boolean hit) {
+            shots++;
+            if (hit) {
+                hits++;
+            }
+        }
+
+        public boolean empty() {
+            for (PossibleShot shot : shotsForExploring) {
+                if (shot.isAvailable()) {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 
 
+    //private static final int[] NEIGHBORS_INDEX_ADJUSTMENT_RANDOM = new int[]{-1, 1};
+
+    /*private PossibleShot getBestPossibleRandomShot() {
+        int x;
+        int y;
+        int iterations = 0;
+        do {
+            if (iterations > 100) {
+                return lookForUnusedShot();
+            }
+            x = getRandomX();
+            y = getRandomY();
+            iterations++;
+        } while (getEnemyBoard().wasShot(x, y) || !isExplorable(x, y));
+
+
+        return possibleShots[getRandomX()][getRandomY()];
+    }*/
+
+    /*private boolean isExplorable(int x, int y) {
+        for (int i : NEIGHBORS_INDEX_ADJUSTMENT_RANDOM) {
+            if (isValid(x + i, y)) {
+                PossibleShot possibleShot = possibleShots[x + i][y];
+                if (possibleShot.isUsed()) {
+                    return false;
+                }
+            }
+        }
+
+        for (int j : NEIGHBORS_INDEX_ADJUSTMENT_RANDOM) {
+            if (isValid(x, y + j)) {
+                PossibleShot possibleShot = possibleShots[x][y + j];
+                if (possibleShot.isUsed()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }*/
 }

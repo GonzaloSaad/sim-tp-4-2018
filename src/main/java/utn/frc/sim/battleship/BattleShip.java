@@ -3,6 +3,7 @@ package utn.frc.sim.battleship;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import utn.frc.sim.battleship.game.Players;
+import utn.frc.sim.battleship.game.exceptions.ConcurrentFailureException;
 import utn.frc.sim.battleship.strategies.CIDSDestroyer;
 import utn.frc.sim.battleship.strategies.RandomStrategy;
 
@@ -46,17 +47,20 @@ public class BattleShip {
 
     public Players runGame(boolean withDelay) {
         while (gameRunning()) {
-            handleTurnsAndGames();
-            if (withDelay) {
-                try {
-                    Thread.sleep(50);
-                } catch (InterruptedException e) {
-                    logger.error("Error while sleeping thread");
+            try {
+                handleTurnsAndGames();
+                if (withDelay) {
+                    Thread.sleep(10);
                 }
+            } catch (InterruptedException e) {
+                logger.error("Error while sleeping thread");
+            } catch (ConcurrentFailureException e){
+                logger.info("Error while updating thread, finishing game. Winner: {}.", getWinner());
+            } catch (Exception e){
+                logger.error(e);
             }
         }
         return getWinner();
-
     }
 
     public boolean gameRunning() {
@@ -99,5 +103,13 @@ public class BattleShip {
         } else {
             return Players.PLAYER_2;
         }
+    }
+
+    public double getPlayer1Accuracy(){
+        return (double) player_1.getHits() / (double)player_1.getShots();
+    }
+
+    public double getPlayer2Accuracy(){
+        return (double) player_2.getHits() / (double)player_2.getShots();
     }
 }
