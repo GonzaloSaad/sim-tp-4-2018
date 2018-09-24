@@ -163,7 +163,7 @@ public class CIDSDestroyer extends RandomStrategy {
             }
         }
 
-        return lookForUnusedShot();
+        return lookForUnusedPossibleShot();
 
 
     }
@@ -191,16 +191,9 @@ public class CIDSDestroyer extends RandomStrategy {
     }
 
 
-    private PossibleShot lookForUnusedShot() {
-        for (int i = 0; i < Board.BOARD_HEIGHT; i++) {
-            for (int j = 0; j < Board.BOARD_WIDTH; j++) {
-                PossibleShot shot = possibleShots[j][i];
-                if (shot.isAvailable()) {
-                    return shot;
-                }
-            }
-        }
-        throw new ConcurrentFailureException();
+    private PossibleShot lookForUnusedPossibleShot() {
+        Shot shot = lookForUnusedShot();
+        return possibleShots[shot.getX()][shot.getY()];
     }
 
 

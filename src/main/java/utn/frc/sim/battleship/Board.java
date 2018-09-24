@@ -304,6 +304,4 @@ public class Board extends Parent {
             return result;
         }
     }
-
-
 }
