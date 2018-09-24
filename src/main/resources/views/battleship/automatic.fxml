@@ -2,23 +2,23 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Spinner?>
 <?import javafx.scene.layout.AnchorPane?>
 
 <AnchorPane prefHeight="540.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="utn.frc.sim.views.battleship.AutomaticController">
    <children>
-      <Label layoutX="54.0" layoutY="104.0" text="Player 1:" />
-      <Label layoutX="54.0" layoutY="128.0" text="Player 2:" />
-      <Label fx:id="lblP1" alignment="CENTER_RIGHT" layoutX="152.0" layoutY="104.0" prefHeight="17.0" prefWidth="56.0" text="0" />
-      <Label fx:id="lblP2" alignment="CENTER_RIGHT" layoutX="152.0" layoutY="128.0" prefHeight="17.0" prefWidth="56.0" text="0" />
-      <Label layoutX="52.0" layoutY="169.0" text="Ganador:" />
-      <Label fx:id="lblWinner" layoutX="129.0" layoutY="169.0" prefHeight="17.0" prefWidth="79.0" />
-      <Button fx:id="btnRun" layoutX="168.0" layoutY="233.0" mnemonicParsing="false" onAction="#btnRunClick" text="Run" />
-      <TextField fx:id="txtGames" layoutX="129.0" layoutY="200.0" prefHeight="17.0" prefWidth="79.0" />
-      <Label layoutX="52.0" layoutY="204.0" text="Partidas:" />
-      <Label layoutX="54.0" layoutY="298.0" text="Player 1 Acc: " />
-      <Label layoutX="54.0" layoutY="326.0" text="Player 2 Acc: " />
-      <Label fx:id="lblPlayer1Acc" layoutX="154.0" layoutY="298.0" prefHeight="17.0" prefWidth="56.0" textAlignment="RIGHT" />
-      <Label fx:id="lblPlayer2Acc" layoutX="152.0" layoutY="326.0" prefHeight="17.0" prefWidth="56.0" textAlignment="RIGHT" />
+      <Label layoutX="55.0" layoutY="81.0" text="Ganadas" />
+      <Label fx:id="lblP1" alignment="CENTER" layoutX="139.0" layoutY="81.0" prefHeight="17.0" prefWidth="56.0" text="0" />
+      <Label fx:id="lblP2" alignment="CENTER" layoutX="233.0" layoutY="81.0" prefHeight="17.0" prefWidth="56.0" text="0" />
+      <Label layoutX="134.0" layoutY="155.0" text="Ganador:" />
+      <Label fx:id="lblWinner" alignment="CENTER_RIGHT" layoutX="210.0" layoutY="155.0" prefHeight="17.0" prefWidth="79.0" />
+      <Button fx:id="btnRun" layoutX="261.0" layoutY="200.0" mnemonicParsing="false" onAction="#btnRunClick" text="Run" />
+      <Label layoutX="54.0" layoutY="204.0" text="Partidas:" />
+      <Label alignment="CENTER" layoutX="144.0" layoutY="53.0" text="Player 1 " />
+      <Label layoutX="238.0" layoutY="53.0" text="Player 2 " />
+      <Label fx:id="lblPlayer1Acc" alignment="CENTER" layoutX="139.0" layoutY="106.0" prefHeight="17.0" prefWidth="56.0" textAlignment="RIGHT" />
+      <Label fx:id="lblPlayer2Acc" alignment="CENTER" layoutX="233.0" layoutY="106.0" prefHeight="17.0" prefWidth="56.0" textAlignment="RIGHT" />
+      <Label layoutX="54.0" layoutY="106.0" text="Accuracy" />
+      <Spinner fx:id="spnGames" editable="true" layoutX="139.0" layoutY="200.0" prefHeight="25.0" prefWidth="113.0" />
    </children>
 </AnchorPane>

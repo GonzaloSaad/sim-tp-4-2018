@@ -111,4 +111,12 @@ public class BattleShip {
     public double getPlayer2Accuracy(){
         return (double) player_2.getHits() / (double)player_2.getShots();
     }
+
+    public int getPlayer1Shots(){
+        return player_1.getShots();
+    }
+
+    public int getPlayer2Shots(){
+        return player_2.getShots();
+    }
 }

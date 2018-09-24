@@ -1,17 +1,24 @@
 package utn.frc.sim.views.battleship;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TextField;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.util.Strings;
 import utn.frc.sim.battleship.BattleShip;
 import utn.frc.sim.battleship.game.Players;
+import utn.frc.sim.statistics.PlayerStatistics;
 import utn.frc.sim.util.DoubleUtils;
 
+import javax.swing.text.html.Option;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -21,7 +28,9 @@ public class AutomaticController {
     private static final String PLAYER_2 = "Player 2";
     private static final String TIE = "Empate";
     private static final int THREADS = Runtime.getRuntime().availableProcessors();
-    private static final Logger logger = LogManager.getLogger(AutomaticController.class);
+    private static final int SPINNER_INTEGER_MIN_VALUE = 1;
+    private static final int SPINNER_INTEGER_MAX_VALUE = 2000;
+    private static final int SPINNER_NO_INCREMENT_STEP = 0;
 
     private ExecutorService executorService;
 
@@ -35,7 +44,7 @@ public class AutomaticController {
     private Label lblWinner;
 
     @FXML
-    private TextField txtGames;
+    private Spinner<Integer> spnGames;
 
     @FXML
     private Button btnRun;
@@ -47,8 +56,20 @@ public class AutomaticController {
     private Label lblPlayer2Acc;
 
     @FXML
+    public void initialize(){
+        initializeSpinner();
+    }
+
+    private void initializeSpinner() {
+        spnGames.setValueFactory(getIntegerValueFactory(SPINNER_INTEGER_MIN_VALUE, SPINNER_INTEGER_MAX_VALUE));
+        spnGames.focusedProperty().addListener(getListenerForChangeValue(spnGames));
+        setTextFieldListenerToSpinner(spnGames);
+    }
+
+    @FXML
     void btnRunClick(ActionEvent event) {
         disableRunButton();
+        clearWinningLabel();
         runAllGamesService();
     }
 
@@ -60,34 +81,30 @@ public class AutomaticController {
     private void runAllGames() {
         int amountOfGames = getAmountOfGames();
 
-        int p1Won = 0;
-        int p2Won = 0;
+        PlayerStatistics player1 = new PlayerStatistics();
+        PlayerStatistics player2 = new PlayerStatistics();
 
-        double p2Acc = 0;
-        double p1Acc = 0;
 
         for (int i = 1; i <= amountOfGames; i++) {
             BattleShip battleShip = new BattleShip();
             Players winner = battleShip.runGame();
 
             if (winner == Players.PLAYER_1) {
-                p1Won++;
-                setLabelOfP1Winning(p1Won);
+                player1.addWonMatch();
+                player1.addShotsToWin(battleShip.getPlayer1Shots());
+                setLabelOfP1Winning(player1.getWonMatches());
             } else {
-                p2Won++;
-                setLabelOfP2Winning(p2Won);
+                player2.addWonMatch();
+                player2.addShotsToWin(battleShip.getPlayer2Shots());
+                setLabelOfP2Winning(player2.getWonMatches());
             }
 
-            if (i == 1) {
-                p2Acc = battleShip.getPlayer2Accuracy();
-                p1Acc = battleShip.getPlayer1Accuracy();
-            } else {
-                p1Acc = ((i - 1) * p1Acc + battleShip.getPlayer1Accuracy()) / i;
-                p2Acc = ((i - 1) * p2Acc + battleShip.getPlayer2Accuracy()) / i;
-            }
+            player1.addAccuracy(battleShip.getPlayer1Accuracy(), i);
+            player2.addAccuracy(battleShip.getPlayer2Accuracy(), i);
+
         }
 
-        setResultsToUI(p1Acc, p2Acc, p1Won, p2Won);
+        setResultsToUI(player1, player2);
         executorService.shutdownNow();
     }
 
@@ -99,10 +116,10 @@ public class AutomaticController {
         Platform.runLater(() -> setLblP1(player1));
     }
 
-    private void setResultsToUI(double p1Accuracy, double p2Accuracy, int p1, int p2) {
-        Platform.runLater(() -> setP1AccLabel(p1Accuracy * 100));
-        Platform.runLater(() -> setP2AccLabel(p2Accuracy * 100));
-        Platform.runLater(() -> setWinnerLabel(p1, p2));
+    private void setResultsToUI(PlayerStatistics player1, PlayerStatistics player2) {
+        Platform.runLater(() -> setP1AccLabel(player1.getAvgAccuracy() * 100));
+        Platform.runLater(() -> setP2AccLabel(player2.getAvgAccuracy() * 100));
+        Platform.runLater(() -> setWinnerLabel(player1.getWonMatches(), player2.getWonMatches()));
         Platform.runLater(this::enableRunButton);
     }
 
@@ -114,10 +131,10 @@ public class AutomaticController {
         lblPlayer2Acc.setText(DoubleUtils.getDoubleWithFourPlaces(accuracy));
     }
 
-    private void setWinnerLabel(int p1, int p2) {
-        if (p1 > p2) {
+    private void setWinnerLabel(int p1wonMatches, int p2wonMatches) {
+        if (p1wonMatches > p2wonMatches) {
             lblWinner.setText(PLAYER_1);
-        } else if (p2 > p1) {
+        } else if (p2wonMatches > p1wonMatches) {
             lblWinner.setText(PLAYER_2);
         } else {
             lblWinner.setText(TIE);
@@ -133,7 +150,17 @@ public class AutomaticController {
     }
 
     private int getAmountOfGames() {
-        return Integer.valueOf(txtGames.getText());
+        Optional<Integer> games = Optional.ofNullable(spnGames.getValue());
+        if (games.isPresent()){
+            return games.get();
+        } else{
+            spnGames.getValueFactory().setValue(SPINNER_INTEGER_MIN_VALUE);
+            return SPINNER_INTEGER_MIN_VALUE;
+        }
+    }
+
+    private void clearWinningLabel() {
+        lblWinner.setText(Strings.EMPTY);
     }
 
     private void disableRunButton() {
@@ -142,6 +169,51 @@ public class AutomaticController {
 
     private void enableRunButton() {
         btnRun.setDisable(Boolean.FALSE);
+    }
+
+    /**
+     * Genera una fabrica de valores enteros para darle un limite al spinner.
+     */
+    private SpinnerValueFactory<Integer> getIntegerValueFactory(int min, int max) {
+        return new SpinnerValueFactory.IntegerSpinnerValueFactory(min, max);
+    }
+
+    /**
+     * Creacion del listener de perdida de focus para el bug de JavaFx.
+     */
+    private <T> ChangeListener<? super Boolean> getListenerForChangeValue(Spinner<T> spinner) {
+        return (observable, oldValue, newValue) -> {
+            if (!newValue) {
+                Optional<Integer> games = Optional.ofNullable(spnGames.getValue());
+                if (games.isPresent()){
+                    spinner.increment(SPINNER_NO_INCREMENT_STEP);
+                } else{
+                    spnGames.getValueFactory().setValue(SPINNER_INTEGER_MIN_VALUE);
+                }
+
+            }
+        };
+    }
+
+    /**
+     * Metodo que inserta un listener de texto de Texfield
+     * a un spinner.
+     */
+    private void setTextFieldListenerToSpinner(Spinner spinner) {
+        TextField textField = spinner.getEditor();
+        textField.textProperty().addListener(getListenerForText(textField));
+    }
+
+    /**
+     * Metodo que genera un Listener para el cambio de
+     * texto de un TextField.
+     */
+    private ChangeListener<String> getListenerForText(TextField textField) {
+        return (observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                textField.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+        };
     }
 
 }
