@@ -13,8 +13,12 @@
       <Label fx:id="lblP2" alignment="CENTER_RIGHT" layoutX="152.0" layoutY="128.0" prefHeight="17.0" prefWidth="56.0" text="0" />
       <Label layoutX="52.0" layoutY="169.0" text="Ganador:" />
       <Label fx:id="lblWinner" layoutX="129.0" layoutY="169.0" prefHeight="17.0" prefWidth="79.0" />
-      <Button layoutX="168.0" layoutY="233.0" mnemonicParsing="false" onAction="#btnRunClick" text="Run" />
+      <Button fx:id="btnRun" layoutX="168.0" layoutY="233.0" mnemonicParsing="false" onAction="#btnRunClick" text="Run" />
       <TextField fx:id="txtGames" layoutX="129.0" layoutY="200.0" prefHeight="17.0" prefWidth="79.0" />
       <Label layoutX="52.0" layoutY="204.0" text="Partidas:" />
+      <Label layoutX="54.0" layoutY="298.0" text="Player 1 Acc: " />
+      <Label layoutX="54.0" layoutY="326.0" text="Player 2 Acc: " />
+      <Label fx:id="lblPlayer1Acc" layoutX="154.0" layoutY="298.0" prefHeight="17.0" prefWidth="56.0" textAlignment="RIGHT" />
+      <Label fx:id="lblPlayer2Acc" layoutX="152.0" layoutY="326.0" prefHeight="17.0" prefWidth="56.0" textAlignment="RIGHT" />
    </children>
 </AnchorPane>

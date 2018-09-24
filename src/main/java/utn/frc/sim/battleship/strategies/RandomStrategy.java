@@ -29,8 +29,6 @@ public class RandomStrategy extends BaseStrategy {
             int y = getRandomY();
             ship = new Ship(x, y, type, orientation);
         } while (!board.placeShip(ship));
-
-        //System.out.println(ship);
     }
 
     @Override
@@ -43,8 +41,4 @@ public class RandomStrategy extends BaseStrategy {
         } while (getEnemyBoard().wasShot(x, y));
         return getEnemyBoard().handleShot(getRandomX(), getRandomY());
     }
-
-
-
-
 }
