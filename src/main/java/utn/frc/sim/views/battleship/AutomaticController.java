@@ -28,6 +28,7 @@ public class AutomaticController {
     private static final int SPINNER_INTEGER_MIN_VALUE = 1;
     private static final int SPINNER_INTEGER_MAX_VALUE = 2000;
     private static final int SPINNER_NO_INCREMENT_STEP = 0;
+    private static final String NO_RESULT = "-";
 
     private ExecutorService executorService;
 
@@ -53,6 +54,12 @@ public class AutomaticController {
     private Label lblPlayer2Acc;
 
     @FXML
+    private Label lblPlayer1ShotsToWin;
+
+    @FXML
+    private Label lblPlayer2ShotsToWin;
+
+    @FXML
     public void initialize() {
         initializeSpinner();
     }
@@ -66,8 +73,15 @@ public class AutomaticController {
     @FXML
     void btnRunClick(ActionEvent event) {
         disableRunButton();
-        clearWinningLabel();
+        clearResultUI();
+
         runAllGamesService();
+    }
+
+    private void clearResultUI() {
+        clearWinningLabel();
+        clearAccuracyLabels();
+        clearShotsToWinLabels();
     }
 
     private void runAllGamesService() {
@@ -88,11 +102,11 @@ public class AutomaticController {
             if (winner == Players.PLAYER_1) {
                 player1.addWonMatch();
                 player1.addShotsToWin(battleShip.getPlayer1Shots());
-                setLabelOfP1Winning(player1.getWonMatches());
+                setWonGamesLabelOfP1(player1.getWonMatches());
             } else {
                 player2.addWonMatch();
                 player2.addShotsToWin(battleShip.getPlayer2Shots());
-                setLabelOfP2Winning(player2.getWonMatches());
+                setWonGamesLabelOfP2(player2.getWonMatches());
             }
 
             player1.addAccuracy(battleShip.getPlayer1Accuracy(), i);
@@ -104,30 +118,42 @@ public class AutomaticController {
         executorService.shutdownNow();
     }
 
-    private void setLabelOfP2Winning(int player2) {
-        Platform.runLater(() -> setLblP2(player2));
-    }
-
-    private void setLabelOfP1Winning(int player1) {
-        Platform.runLater(() -> setLblP1(player1));
-    }
-
     private void setResultsToUI(PlayerStatistics player1, PlayerStatistics player2) {
-        Platform.runLater(() -> setP1AccLabel(player1.getAvgAccuracy() * 100));
-        Platform.runLater(() -> setP2AccLabel(player2.getAvgAccuracy() * 100));
-        Platform.runLater(() -> setWinnerLabel(player1.getWonMatches(), player2.getWonMatches()));
+        Platform.runLater(() -> setAvgAccuracyLabels(player1, player2));
+        Platform.runLater(() -> setShotsToWinLabels(player1, player2));
+        Platform.runLater(() -> setWinnerLabels(player1, player2));
         Platform.runLater(this::enableRunButton);
     }
 
-    private void setP1AccLabel(double accuracy) {
+    private void setAvgAccuracyLabels(PlayerStatistics player1, PlayerStatistics player2) {
+        setP1AccuracyLabel(player1.getAvgAccuracy() * 100);
+        setP2AccuracyLabel(player2.getAvgAccuracy() * 100);
+    }
+
+    private void setP1AccuracyLabel(double accuracy) {
         lblPlayer1Acc.setText(DoubleUtils.getDoubleWithFourPlaces(accuracy));
     }
 
-    private void setP2AccLabel(double accuracy) {
+    private void setP2AccuracyLabel(double accuracy) {
         lblPlayer2Acc.setText(DoubleUtils.getDoubleWithFourPlaces(accuracy));
     }
 
-    private void setWinnerLabel(int p1wonMatches, int p2wonMatches) {
+    private void setShotsToWinLabels(PlayerStatistics player1, PlayerStatistics player2) {
+        setP1ShotsToWinLabel(player1.getAvgShotToWin());
+        setP2ShotsToWinLabel(player2.getAvgShotToWin());
+    }
+
+    private void setP1ShotsToWinLabel(int shotsToWin) {
+        lblPlayer1ShotsToWin.setText(shotsToWin == 0 ? NO_RESULT : Integer.toString(shotsToWin));
+    }
+
+    private void setP2ShotsToWinLabel(int shotsToWin) {
+        lblPlayer2ShotsToWin.setText(shotsToWin == 0 ? NO_RESULT : Integer.toString(shotsToWin));
+    }
+
+    private void setWinnerLabels(PlayerStatistics player1, PlayerStatistics player2) {
+        int p1wonMatches = player1.getWonMatches();
+        int p2wonMatches = player2.getWonMatches();
         if (p1wonMatches > p2wonMatches) {
             lblWinner.setText(PLAYER_1);
         } else if (p2wonMatches > p1wonMatches) {
@@ -137,12 +163,42 @@ public class AutomaticController {
         }
     }
 
-    private void setLblP1(int amount) {
-        lblP1.setText(Integer.toString(amount));
+    private void setWonGamesLabelOfP1(int player1WonMatches) {
+        Platform.runLater(() -> setWonGamesLblP1(player1WonMatches));
     }
 
-    private void setLblP2(int amount) {
-        lblP2.setText(Integer.toString(amount));
+    private void setWonGamesLabelOfP2(int player2WonMatches) {
+        Platform.runLater(() -> setWonGamesLblP2(player2WonMatches));
+    }
+
+    private void setWonGamesLblP1(int amountOfWonMatches) {
+        lblP1.setText(Integer.toString(amountOfWonMatches));
+    }
+
+    private void setWonGamesLblP2(int amountOfWonMatches) {
+        lblP2.setText(Integer.toString(amountOfWonMatches));
+    }
+
+    private void clearWinningLabel() {
+        lblWinner.setText(Strings.EMPTY);
+    }
+
+    private void clearShotsToWinLabels() {
+        lblPlayer1ShotsToWin.setText(Strings.EMPTY);
+        lblPlayer2ShotsToWin.setText(Strings.EMPTY);
+    }
+
+    private void clearAccuracyLabels() {
+        lblPlayer1Acc.setText(Strings.EMPTY);
+        lblPlayer2Acc.setText(Strings.EMPTY);
+    }
+
+    private void disableRunButton() {
+        btnRun.setDisable(Boolean.TRUE);
+    }
+
+    private void enableRunButton() {
+        btnRun.setDisable(Boolean.FALSE);
     }
 
     private int getAmountOfGames() {
@@ -153,18 +209,6 @@ public class AutomaticController {
             spnGames.getValueFactory().setValue(SPINNER_INTEGER_MIN_VALUE);
             return SPINNER_INTEGER_MIN_VALUE;
         }
-    }
-
-    private void clearWinningLabel() {
-        lblWinner.setText(Strings.EMPTY);
-    }
-
-    private void disableRunButton() {
-        btnRun.setDisable(Boolean.TRUE);
-    }
-
-    private void enableRunButton() {
-        btnRun.setDisable(Boolean.FALSE);
     }
 
     /**
