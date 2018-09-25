@@ -15,6 +15,10 @@ public class PossibleShoots {
         this.state = ShotResult.MISS;
     }
 
+    public PossibleShoots(int x, int y){
+        this(x, y, ShotResult.NONE);
+    }
+
     private ShotResult state() {
         return state;
     }
@@ -31,5 +35,20 @@ public class PossibleShoots {
         return y;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PossibleShoots)) return false;
+        PossibleShoots that = (PossibleShoots) o;
+        return x == that.x &&
+                y == that.y &&
+                state == that.state;
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(x, y, state);
+    }
 }
 
