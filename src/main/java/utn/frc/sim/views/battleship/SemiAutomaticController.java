@@ -26,6 +26,7 @@ public class SemiAutomaticController {
     private static final String PLAYER_1 = "Player 1";
     private static final String PLAYER_2 = "Player 2";
     private static final String SEPARATOR = "    ";
+    private static final String DASH = "-";
     private ExecutorService executorService;
     private static final int SPINNER_INTEGER_MIN_VALUE = 5;
     private static final int SPINNER_INTEGER_MAX_VALUE = 50;
@@ -132,6 +133,7 @@ public class SemiAutomaticController {
     private void runGameToEnd() {
         running = true;
         Platform.runLater(this::disableShotsButtons);
+        Platform.runLater(this::setTurnLabelToDash);
         int delay = getDelayFromSpinner();
         while (running && battleShip.gameRunning()) {
 
@@ -150,10 +152,13 @@ public class SemiAutomaticController {
         executorService.shutdown();
     }
 
+
+
     private void handleOneTurnShot() {
         if (battleShip.gameRunning()) {
             battleShip.playOneTurn();
             setStatisticsToUI();
+            setTurnLabel();
         } else {
             setWinnerState();
         }
@@ -224,6 +229,10 @@ public class SemiAutomaticController {
         } else {
             lblTurn.setText(PLAYER_2);
         }
+    }
+
+    private void setTurnLabelToDash() {
+        lblTurn.setText(DASH);
     }
 
     /**
