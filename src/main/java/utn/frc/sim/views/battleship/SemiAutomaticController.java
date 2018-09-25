@@ -9,6 +9,7 @@ import javafx.scene.layout.HBox;
 import org.apache.logging.log4j.util.Strings;
 import utn.frc.sim.battleship.BattleShip;
 import utn.frc.sim.battleship.game.Players;
+import utn.frc.sim.util.DoubleUtils;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -32,6 +33,27 @@ public class SemiAutomaticController {
     @FXML
     private HBox pnlBoards;
 
+    @FXML
+    private Label lblP1Shots;
+
+    @FXML
+    private Label lblP1Hits;
+
+    @FXML
+    private Label lblP2Shots;
+
+    @FXML
+    private Label lblP2Hits;
+
+    @FXML
+    private Label lblP1Accuracy;
+
+    @FXML
+    private Label lblP2Accuracy;
+
+    @FXML
+    private Label lblTurn;
+
     private BattleShip battleShip;
 
     @FXML
@@ -44,8 +66,8 @@ public class SemiAutomaticController {
         pnlBoards.getChildren().add(battleShip.getBoardPlayer1());
         pnlBoards.getChildren().add(new Label(SEPARATOR));
         pnlBoards.getChildren().add(battleShip.getBoardPlayer2());
+        setTurnLabel();
     }
-
 
     @FXML
     void btnRestartClick(ActionEvent event) {
@@ -71,21 +93,44 @@ public class SemiAutomaticController {
     }
 
     private void runGameToEnd() {
-        battleShip.runGame();
+        Platform.runLater(this::disableShotsButtons);
+        battleShip.runGame(true);
         Platform.runLater(this::setWinnerState);
+        Platform.runLater(this::setStatisticsToUI);
         executorService.shutdown();
     }
 
     private void handleOneTurnShot() {
         if (battleShip.gameRunning()) {
             battleShip.playOneTurn();
+            setStatisticsToUI();
         } else {
             setWinnerState();
         }
     }
 
+    private void setStatisticsToUI() {
+        setShotsLabels();
+        setHitsLabels();
+        setAccuracyLabels();
+    }
+
+    private void setShotsLabels() {
+        lblP1Shots.setText(Integer.toString(battleShip.getPlayer1Shots()));
+        lblP2Shots.setText(Integer.toString(battleShip.getPlayer2Shots()));
+    }
+
+    private void setHitsLabels() {
+        lblP1Hits.setText(Integer.toString(battleShip.getPlayer1Hits()));
+        lblP2Hits.setText(Integer.toString(battleShip.getPlayer2Hits()));
+    }
+
+    private void setAccuracyLabels() {
+        lblP1Accuracy.setText(DoubleUtils.getDoubleWithFourPlaces(battleShip.getPlayer1Accuracy()));
+        lblP2Accuracy.setText(DoubleUtils.getDoubleWithFourPlaces(battleShip.getPlayer2Accuracy()));
+    }
+
     private void setWinnerState() {
-        disableShotsButtons();
         setWinnerLabel();
     }
 
@@ -121,6 +166,14 @@ public class SemiAutomaticController {
     private void enableShotsButtons() {
         btnShot.setDisable(Boolean.FALSE);
         btnStart.setDisable(Boolean.FALSE);
+    }
+
+    private void setTurnLabel() {
+        if (battleShip.getTurn() == Players.PLAYER_1){
+            lblTurn.setText(PLAYER_1);
+        } else {
+            lblTurn.setText(PLAYER_2);
+        }
     }
 }
 

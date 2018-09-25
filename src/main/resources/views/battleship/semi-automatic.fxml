@@ -7,11 +7,26 @@
 
 <AnchorPane prefHeight="540.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="utn.frc.sim.views.battleship.SemiAutomaticController">
    <children>
-      <HBox fx:id="pnlBoards" layoutX="8.0" layoutY="38.0" prefHeight="418.0" prefWidth="1172.0" />
+      <HBox fx:id="pnlBoards" layoutX="8.0" layoutY="38.0" prefHeight="319.0" prefWidth="1172.0" />
       <Button fx:id="btnStart" layoutX="1102.0" layoutY="464.0" mnemonicParsing="false" onAction="#btnStartClick" text="Ya dale Gas" />
       <Button fx:id="btnShot" layoutX="1046.0" layoutY="464.0" mnemonicParsing="false" onAction="#btnShotClick" text="Turno" />
-      <Label layoutX="35.0" layoutY="468.0" prefHeight="17.0" prefWidth="61.0" text="Ganador:" />
-      <Label fx:id="lblWinner" layoutX="96.0" layoutY="468.0" prefHeight="17.0" prefWidth="106.0" />
+      <Label layoutX="45.0" layoutY="489.0" prefHeight="17.0" prefWidth="61.0" text="Ganador:" />
+      <Label fx:id="lblWinner" layoutX="106.0" layoutY="489.0" prefHeight="17.0" prefWidth="106.0" />
       <Button layoutX="932.0" layoutY="464.0" mnemonicParsing="false" onAction="#btnRestartClick" text="Restart" />
+      <Label layoutX="128.0" layoutY="357.0" text="Player 1" />
+      <Label layoutX="221.0" layoutY="357.0" text="Player 2" />
+      <Label alignment="CENTER_RIGHT" layoutX="31.0" layoutY="385.0" prefHeight="17.0" prefWidth="61.0" text="Tiros" />
+      <Label alignment="CENTER_RIGHT" layoutX="34.0" layoutY="411.0" prefHeight="17.0" prefWidth="61.0" text="Aciertos" />
+      <Label alignment="CENTER_RIGHT" layoutX="34.0" layoutY="435.0" prefHeight="17.0" prefWidth="61.0" text="Precisión" />
+      <Label fx:id="lblP1Shots" alignment="CENTER" layoutX="146.0" layoutY="385.0" text="0" />
+      <Label fx:id="lblP1Hits" alignment="CENTER" layoutX="146.0" layoutY="411.0" text="0" />
+      <Label fx:id="lblP2Shots" alignment="CENTER" layoutX="239.0" layoutY="385.0" text="0" />
+      <Label fx:id="lblP2Hits" alignment="CENTER" layoutX="239.0" layoutY="411.0" text="0" />
+      <Label fx:id="lblP1Accuracy" alignment="CENTER" layoutX="146.0" layoutY="435.0" text="0" />
+      <Label fx:id="lblP2Accuracy" alignment="CENTER" layoutX="239.0" layoutY="435.0" text="0" />
+      <Label layoutX="228.0" layoutY="21.0" text="Player 1 Board" />
+      <Label layoutX="882.0" layoutY="21.0" text="Player 2 Board" />
+      <Label layoutX="356.0" layoutY="357.0" text="Turno:" />
+      <Label fx:id="lblTurn" alignment="CENTER_RIGHT" layoutX="413.0" layoutY="357.0" prefHeight="17.0" prefWidth="61.0" />
    </children>
 </AnchorPane>
