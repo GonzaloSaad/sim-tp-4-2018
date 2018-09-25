@@ -176,8 +176,8 @@ public class SemiAutomaticController {
     }
 
     private void setAccuracyLabels() {
-        lblP1Accuracy.setText(DoubleUtils.getDoubleWithFourPlaces(battleShip.getPlayer1Accuracy()));
-        lblP2Accuracy.setText(DoubleUtils.getDoubleWithFourPlaces(battleShip.getPlayer2Accuracy()));
+        lblP1Accuracy.setText(DoubleUtils.getDoubleWithFourPlaces(battleShip.getPlayer1Accuracy() * 100));
+        lblP2Accuracy.setText(DoubleUtils.getDoubleWithFourPlaces(battleShip.getPlayer2Accuracy() * 100));
     }
 
     private void setWinnerState() {

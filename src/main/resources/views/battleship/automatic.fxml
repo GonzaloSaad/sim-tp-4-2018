@@ -18,7 +18,7 @@
       <Label layoutX="238.0" layoutY="53.0" text="Player 2 " />
       <Label fx:id="lblPlayer1Acc" alignment="CENTER" layoutX="139.0" layoutY="106.0" prefHeight="17.0" prefWidth="56.0" textAlignment="RIGHT" />
       <Label fx:id="lblPlayer2Acc" alignment="CENTER" layoutX="233.0" layoutY="106.0" prefHeight="17.0" prefWidth="56.0" textAlignment="RIGHT" />
-      <Label layoutX="54.0" layoutY="106.0" text="Precisión" />
+      <Label alignment="CENTER_RIGHT" layoutX="31.0" layoutY="106.0" prefHeight="17.0" prefWidth="71.0" text="Precisión(%)" />
       <Spinner fx:id="spnGames" editable="true" layoutX="139.0" layoutY="200.0" prefHeight="25.0" prefWidth="113.0" />
       <Label fx:id="lblPlayer1ShotsToWin" alignment="CENTER" layoutX="140.0" layoutY="130.0" prefHeight="17.0" prefWidth="56.0" textAlignment="RIGHT" />
       <Label fx:id="lblPlayer2ShotsToWin" alignment="CENTER" layoutX="234.0" layoutY="130.0" prefHeight="17.0" prefWidth="56.0" textAlignment="RIGHT" />
