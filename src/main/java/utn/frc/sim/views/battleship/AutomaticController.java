@@ -251,7 +251,11 @@ public class AutomaticController {
     private ChangeListener<String> getListenerForText(TextField textField) {
         return (observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*")) {
-                textField.setText(newValue.replaceAll("[^\\d]", ""));
+                String value = newValue.replaceAll("[^\\d]", "");
+                if (value.length()==0){
+                    value = Integer.toString(SPINNER_INTEGER_MIN_VALUE);
+                }
+                textField.setText(value);
             }
         };
     }
