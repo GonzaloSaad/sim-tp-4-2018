@@ -36,15 +36,23 @@ public class Player {
         return board.isAlive();
     }
 
-    public int getHits() {
-        return hits;
-    }
-
     public Board getBoard() {
         return board;
     }
 
     public int getShots() {
         return shots;
+    }
+
+    public int getHits() {
+        return hits;
+    }
+
+    public int getEnemyShots(){
+        return getBoard().getShots();
+    }
+
+    public int getEnemyHits(){
+        return getBoard().getHits();
     }
 }

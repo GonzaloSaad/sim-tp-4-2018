@@ -1,9 +1,9 @@
 package utn.frc.sim.statistics;
 
 public class PlayerStatistics {
-    int wonMatches;
-    int avgShotToWin;
-    double avgAccuracy;
+    private int wonMatches;
+    private int avgShotToWin;
+    private double avgAccuracy;
 
 
     public PlayerStatistics() {

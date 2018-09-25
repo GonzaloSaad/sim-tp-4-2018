@@ -74,7 +74,6 @@ public class AutomaticController {
     void btnRunClick(ActionEvent event) {
         disableRunButton();
         clearResultUI();
-
         runAllGamesService();
     }
 
