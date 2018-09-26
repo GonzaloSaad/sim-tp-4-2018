@@ -1,6 +1,7 @@
 package utn.frc.sim.battleship.strategies;
 
 import utn.frc.sim.battleship.Board;
+import utn.frc.sim.battleship.game.shots.Shot;
 import utn.frc.sim.battleship.game.shots.ShotResult;
 import utn.frc.sim.battleship.strategies.models.PossibleShoots;
 
@@ -22,6 +23,7 @@ public class CIDSStrategy extends RandomStrategy {
 
     private Boolean isHuntingMode;
 
+    private boolean useParity = true;
 
     public CIDSStrategy() {
         super();
@@ -255,11 +257,20 @@ public class CIDSStrategy extends RandomStrategy {
         int random_y;
         PossibleShoots ps;
 
+        int count = 0;
 
         do{
+            if (!useParity || count > 150) {
+                useParity = false;
+                Shot shot = lookForUnusedShot();
+                ps = new PossibleShoots(shot.getX(), shot.getY());
+                break;
+            }
+
             random_x = rand.nextInt(rangeX);
             random_y = rand.nextInt(rangeY);
             ps = new PossibleShoots(random_x, random_y);
+            count++;
         }
         while (getEnemyBoard().wasShot(ps.getX(), ps.getY()) || !isParityCell(ps.getX(), ps.getY()) || !board.isValidX(ps.getX()) || !board.isValidX(ps.getY()));
 
