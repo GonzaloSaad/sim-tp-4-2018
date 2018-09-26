@@ -35,7 +35,7 @@ public class CIDSStrategy extends RandomStrategy {
 
     @Override
     public ShotResult getNextShot() {
-        PossibleShoots ps = generateRandom(0, Board.BOARD_WIDTH, 0, Board.BOARD_HEIGHT);
+        PossibleShoots ps = generateRandom(0, Board.BOARD_WIDTH, 0, Board.BOARD_HEIGHT, getEnemyBoard());
         ShotResult result = null;
         //Si estamos en modo caza
         if (isHuntingMode) {
@@ -246,7 +246,7 @@ public class CIDSStrategy extends RandomStrategy {
         return false;
     }
 
-    public PossibleShoots generateRandom(int startX, int endX, int startY, int endY) {
+    public PossibleShoots generateRandom(int startX, int endX, int startY, int endY, Board board) {
         Random rand = new Random();
         int rangeX = endX - startX;
         int rangeY = endY - startY;
@@ -260,7 +260,7 @@ public class CIDSStrategy extends RandomStrategy {
             random_y = rand.nextInt(rangeY);
             ps = new PossibleShoots(random_x, random_y);
         }
-        while (getEnemyBoard().wasShot(ps.getX(), ps.getY()) || !isParityCell(ps.getX(), ps.getY()));
+        while (getEnemyBoard().wasShot(ps.getX(), ps.getY()) || !isParityCell(ps.getX(), ps.getY()) || !board.isValidX(ps.getX()) || !board.isValidX(ps.getY()));
 
         return ps;
     }
