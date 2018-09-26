@@ -124,11 +124,11 @@ public class Board extends Parent {
         return isValidX(x) && isValidY(y);
     }
 
-    private boolean isValidX(double x) {
+    public boolean isValidX(double x) {
         return x >= 0 && x < BOARD_WIDTH;
     }
 
-    private boolean isValidY(double y) {
+    public boolean isValidY(double y) {
         return y >= 0 && y < BOARD_HEIGHT;
     }
 

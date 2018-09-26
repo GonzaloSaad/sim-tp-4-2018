@@ -90,7 +90,6 @@ public class AutomaticController {
 
     private void runAllGames() {
         int amountOfGames = getAmountOfGames();
-
         PlayerStatistics player1 = new PlayerStatistics();
         PlayerStatistics player2 = new PlayerStatistics();
 
