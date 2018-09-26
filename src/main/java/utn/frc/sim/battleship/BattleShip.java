@@ -105,10 +105,36 @@ public class BattleShip {
     }
 
     public double getPlayer1Accuracy(){
+        if (player_1.getShots() == 0){
+            return 0;
+        }
         return (double) player_1.getHits() / (double)player_1.getShots();
     }
 
     public double getPlayer2Accuracy(){
+        if (player_2.getShots() == 0){
+            return 0;
+        }
         return (double) player_2.getHits() / (double)player_2.getShots();
+    }
+
+    public int getPlayer1Shots(){
+        return player_1.getShots();
+    }
+
+    public int getPlayer2Shots(){
+        return player_2.getShots();
+    }
+
+    public int getPlayer1Hits(){
+        return player_1.getHits();
+    }
+
+    public int getPlayer2Hits(){
+        return player_2.getHits();
+    }
+
+    public Players getTurn(){
+        return turn;
     }
 }

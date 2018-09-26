@@ -12,7 +12,6 @@ import utn.frc.sim.battleship.game.shots.ShotResult;
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class Board extends Parent {
 
     public static final int BOARD_HEIGHT = 32;
@@ -107,6 +106,14 @@ public class Board extends Parent {
             return cell.wasShot();
         }
         return Boolean.FALSE;
+    }
+
+    public int getShots() {
+        return shots;
+    }
+
+    public int getHits() {
+        return hits;
     }
 
     private Cell getCell(int x, int y) {
