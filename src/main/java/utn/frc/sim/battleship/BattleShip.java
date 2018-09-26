@@ -54,11 +54,11 @@ public class BattleShip {
                     Thread.sleep(10);
                 }
             } catch (InterruptedException e) {
-                logger.error("Error while sleeping thread");
+                logger.info("Error while sleeping thread");
             } catch (ConcurrentFailureException e){
                 logger.info("Error while updating thread, finishing game. Winner: {}.", getWinner());
             } catch (Exception e){
-                logger.error(e);
+                logger.info(e);
                 break;
             }
         }

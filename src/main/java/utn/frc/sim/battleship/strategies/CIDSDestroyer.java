@@ -153,7 +153,6 @@ public class CIDSDestroyer extends RandomStrategy {
         }
     }
 
-
     private PossibleShot getBestPossibleRandomShot() {
         if (randomFromRegions) {
             try {
@@ -190,12 +189,10 @@ public class CIDSDestroyer extends RandomStrategy {
         return possibleShot;
     }
 
-
     private PossibleShot lookForUnusedPossibleShot() {
         Shot shot = lookForUnusedShot();
         return possibleShots[shot.getX()][shot.getY()];
     }
-
 
     private PossibleShot getBestPossibleHuntingShot() {
         TreeSet<PossibleShot> orderedShots = new TreeSet<>();
@@ -344,45 +341,4 @@ public class CIDSDestroyer extends RandomStrategy {
             return true;
         }
     }
-
-
-    //private static final int[] NEIGHBORS_INDEX_ADJUSTMENT_RANDOM = new int[]{-1, 1};
-
-    /*private PossibleShot getBestPossibleRandomShot() {
-        int x;
-        int y;
-        int iterations = 0;
-        do {
-            if (iterations > 100) {
-                return lookForUnusedShot();
-            }
-            x = getRandomX();
-            y = getRandomY();
-            iterations++;
-        } while (getEnemyBoard().wasShot(x, y) || !isExplorable(x, y));
-
-
-        return possibleShots[getRandomX()][getRandomY()];
-    }*/
-
-    /*private boolean isExplorable(int x, int y) {
-        for (int i : NEIGHBORS_INDEX_ADJUSTMENT_RANDOM) {
-            if (isValid(x + i, y)) {
-                PossibleShot possibleShot = possibleShots[x + i][y];
-                if (possibleShot.isUsed()) {
-                    return false;
-                }
-            }
-        }
-
-        for (int j : NEIGHBORS_INDEX_ADJUSTMENT_RANDOM) {
-            if (isValid(x, y + j)) {
-                PossibleShot possibleShot = possibleShots[x][y + j];
-                if (possibleShot.isUsed()) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }*/
 }
