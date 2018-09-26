@@ -213,18 +213,23 @@ public class CIDSStrategy extends RandomStrategy {
                     }
                 } else {
                     result = getEnemyBoard().handleShot(ps.getX(), ps.getY());
-                    if (result == ShotResult.HIT) {
-                        isHuntingMode = true;
-                        firstHit = ps;
+                    if(!hasDestroyedShip(result)){
+                        if (result == ShotResult.HIT) {
+                            isHuntingMode = true;
+                            firstHit = ps;
+                        }
                     }
                 }
             }
         } else {
             result = getEnemyBoard().handleShot(ps.getX(), ps.getY());
-            if (result == ShotResult.HIT) {
-                isHuntingMode = true;
-                firstHit = ps;
+            if(!hasDestroyedShip(result)){
+                if (result == ShotResult.HIT) {
+                    isHuntingMode = true;
+                    firstHit = ps;
+                }
             }
+
         }
         return result;
     }
@@ -255,15 +260,13 @@ public class CIDSStrategy extends RandomStrategy {
             random_y = rand.nextInt(rangeY);
             ps = new PossibleShoots(random_x, random_y);
         }
-        // Genera uno nuevo si:
-        // * ya se disparo a esa celda.
-        // * si ya se disparo a esa celda y si el no disparo da en celda impar(x impar, y impar)
-        // * si ya se disparo a esa celda y si el no disparo da en celda par(x par, y par)
-        while (getEnemyBoard().wasShot(ps.getX(), ps.getY()) ||
-                (getEnemyBoard().wasShot(ps.getX(), ps.getY()) && !(ps.getX() % 2 == 0 && ps.getY() % 2 == 0)));// ||
-//                (getEnemyBoard().wasShot(ps.getX(), ps.getY()) && !(ps.getX() % 2 != 0 && ps.getY() % 2 != 0)));
+        while (getEnemyBoard().wasShot(ps.getX(), ps.getY()) || !isParityCell(ps.getX(), ps.getY()));
 
         return ps;
+    }
+
+    public Boolean isParityCell(int x, int y){
+        return (x % 2 == 0 && y % 2 == 0) ||(x % 2 != 0 && y % 2 != 0);
     }
 
 }
