@@ -5,6 +5,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import utn.frc.sim.battleship.game.exceptions.CoordinatesNotValidException;
 import utn.frc.sim.battleship.game.ships.Ship;
 import utn.frc.sim.battleship.game.shots.ShotResult;
 
@@ -93,7 +94,7 @@ public class Board extends Parent {
             Cell cell = getCell(x, y);
             return cell.shoot();
         }
-        throw new RuntimeException();
+        throw new CoordinatesNotValidException("X and Y must be in the board. x=" + x + ", y=" + y + ".");
     }
 
     public boolean isAlive() {
