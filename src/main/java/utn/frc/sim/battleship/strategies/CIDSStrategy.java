@@ -10,9 +10,6 @@ import java.util.Random;
 
 public class CIDSStrategy extends RandomStrategy {
 
-    private static final int QUARTER_BOARD_Y = Board.BOARD_HEIGHT / 2;
-    private static final int QUARTER_BOARD_X = Board.BOARD_WIDTH / 2;
-
     private ArrayList<PossibleShoots> hitted;
     //First hit es un punto "pivot" desde el que partimos para darle a un barco, se borra al obtener result destroyed.
     private PossibleShoots firstHit;
@@ -249,16 +246,23 @@ public class CIDSStrategy extends RandomStrategy {
         int rangeX = endX - startX;
         int rangeY = endY - startY;
 
-        int random_x = rand.nextInt(rangeX);
-        int random_y = rand.nextInt(rangeY);
-        PossibleShoots ps = new PossibleShoots(random_x, random_y);
+        int random_x;
+        int random_y;
+        PossibleShoots ps;
 
-        while (getEnemyBoard().wasShot(ps.getX(), ps.getY()) &&
-                (ps.getX() % 2 == 0 && ps.getY() % 2 == 0) || (ps.getX() % 2 != 0 && ps.getY() % 2 != 0)) {
+        do{
             random_x = rand.nextInt(rangeX);
             random_y = rand.nextInt(rangeY);
             ps = new PossibleShoots(random_x, random_y);
         }
+        // Genera uno nuevo si:
+        // * ya se disparo a esa celda.
+        // * si ya se disparo a esa celda y si el no disparo da en celda impar(x impar, y impar)
+        // * si ya se disparo a esa celda y si el no disparo da en celda par(x par, y par)
+        while (getEnemyBoard().wasShot(ps.getX(), ps.getY()) ||
+                (getEnemyBoard().wasShot(ps.getX(), ps.getY()) && !(ps.getX() % 2 == 0 && ps.getY() % 2 == 0)));// ||
+//                (getEnemyBoard().wasShot(ps.getX(), ps.getY()) && !(ps.getX() % 2 != 0 && ps.getY() % 2 != 0)));
+
         return ps;
     }
 
