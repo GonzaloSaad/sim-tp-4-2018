@@ -45,131 +45,128 @@ public class CIDSStrategy extends RandomStrategy {
             //Si ya pegamos una vez
             if (lastHit != null) {
                 //Si estimamos que el target es horizontal y derecho
-                if(targetIsHorizontal && targetIsPositive){
+                if (targetIsHorizontal && targetIsPositive) {
                     //Si la coordenada es valida y no es un tiro realizado previamente
-                    if(getEnemyBoard().isValidX(lastHit.getX() + 1) && !getEnemyBoard().wasShot(lastHit.getX() + 1, lastHit.getY())){
-                        PossibleShoots pss = new PossibleShoots(lastHit.getX()+1, lastHit.getY());
+                    if (getEnemyBoard().isValidX(lastHit.getX() + 1) && !getEnemyBoard().wasShot(lastHit.getX() + 1, lastHit.getY())) {
+                        PossibleShoots pss = new PossibleShoots(lastHit.getX() + 1, lastHit.getY());
                         result = getEnemyBoard().handleShot(pss.getX(), pss.getY());
                         //Si no destruimos el target
-                        if(!hasDestroyedShip(result)){
+                        if (!hasDestroyedShip(result)) {
                             //Si pegamos, seguimos en la misma direccion
-                            if(result == ShotResult.HIT){
+                            if (result == ShotResult.HIT) {
                                 lastHit = pss;
                                 targetIsHorizontal = true;
                                 targetIsPositive = true;
                             }
                             //Si erramos, cambiamos de direccion
-                            else{
+                            else {
                                 lastHit = null;
                                 targetIsPositive = false;
                             }
                         }
                     }
                     //Para el tiro N despues del segundo, si las coordenadas no son validas cambiamos de direccion
-                    else{
-                        PossibleShoots pss = new PossibleShoots(firstHit.getX()-1, firstHit.getY());
+                    else {
+                        PossibleShoots pss = new PossibleShoots(firstHit.getX() - 1, firstHit.getY());
                         result = getEnemyBoard().handleShot(pss.getX(), pss.getY());
-                        if(!hasDestroyedShip(result)){
+                        if (!hasDestroyedShip(result)) {
                             targetIsPositive = false;
-                            if(result == ShotResult.HIT){
+                            if (result == ShotResult.HIT) {
                                 lastHit = pss;
-                            }else{
+                            } else {
                                 lastHit = null;
                             }
                         }
                     }
                 }
                 //Si estimamos que el target es horizontal e izquierdo
-                else if(targetIsHorizontal && !targetIsPositive){
-                    if(getEnemyBoard().isValidX(lastHit.getX() - 1) && !getEnemyBoard().wasShot(lastHit.getX() - 1, lastHit.getY())){
-                        PossibleShoots pss = new PossibleShoots(lastHit.getX()-1, lastHit.getY());
+                else if (targetIsHorizontal && !targetIsPositive) {
+                    if (getEnemyBoard().isValidX(lastHit.getX() - 1) && !getEnemyBoard().wasShot(lastHit.getX() - 1, lastHit.getY())) {
+                        PossibleShoots pss = new PossibleShoots(lastHit.getX() - 1, lastHit.getY());
                         result = getEnemyBoard().handleShot(pss.getX(), pss.getY());
-                        if(!hasDestroyedShip(result)){
-                            if(result == ShotResult.HIT){
+                        if (!hasDestroyedShip(result)) {
+                            if (result == ShotResult.HIT) {
                                 lastHit = pss;
                                 targetIsHorizontal = true;
                                 targetIsPositive = false;
-                            }
-                            else{
+                            } else {
                                 lastHit = null;
                                 targetIsPositive = true;
                             }
                         }
-                        
-                    }else{
-                        PossibleShoots pss = new PossibleShoots(firstHit.getX()+1, firstHit.getY());
+
+                    } else {
+                        PossibleShoots pss = new PossibleShoots(firstHit.getX() + 1, firstHit.getY());
                         result = getEnemyBoard().handleShot(pss.getX(), pss.getY());
-                        if(!hasDestroyedShip(result)){
+                        if (!hasDestroyedShip(result)) {
                             targetIsPositive = true;
-                            if(result == ShotResult.HIT){
+                            if (result == ShotResult.HIT) {
                                 lastHit = pss;
-                            }else{
+                            } else {
                                 lastHit = null;
                             }
                         }
-                        
+
                     }
                 }
                 //Si estimamos que el target es vertical y arriba
-                else if(!targetIsHorizontal && targetIsPositive){
-                    if(getEnemyBoard().isValidY(lastHit.getY()+1) && !getEnemyBoard().wasShot(lastHit.getX(), lastHit.getY()+1)){
-                        PossibleShoots pss = new PossibleShoots(lastHit.getX(), lastHit.getY()+1);
+                else if (!targetIsHorizontal && targetIsPositive) {
+                    if (getEnemyBoard().isValidY(lastHit.getY() + 1) && !getEnemyBoard().wasShot(lastHit.getX(), lastHit.getY() + 1)) {
+                        PossibleShoots pss = new PossibleShoots(lastHit.getX(), lastHit.getY() + 1);
                         result = getEnemyBoard().handleShot(pss.getX(), pss.getY());
-                        if(!hasDestroyedShip(result)){
-                            if(result == ShotResult.HIT){
+                        if (!hasDestroyedShip(result)) {
+                            if (result == ShotResult.HIT) {
                                 lastHit = pss;
                                 targetIsHorizontal = false;
                                 targetIsPositive = true;
-                            }
-                            else{
+                            } else {
                                 lastHit = null;
                                 targetIsPositive = false;
                             }
                         }
-                        
-                    }else{
-                        PossibleShoots pss = new PossibleShoots(firstHit.getX(), firstHit.getY()-1);
+
+                    } else {
+                        PossibleShoots pss = new PossibleShoots(firstHit.getX(), firstHit.getY() - 1);
                         result = getEnemyBoard().handleShot(pss.getX(), pss.getY());
-                        if(!hasDestroyedShip(result)){
+                        if (!hasDestroyedShip(result)) {
                             targetIsPositive = false;
-                            if(result == ShotResult.HIT){
+                            if (result == ShotResult.HIT) {
                                 lastHit = pss;
-                            }else{
+                            } else {
                                 lastHit = null;
                             }
                         }
-                        
+
                     }
                 }
                 //Si estimamos que el target es vertical y abajo
-                else{
-                    if(getEnemyBoard().isValidY(lastHit.getY() - 1) && !getEnemyBoard().wasShot(lastHit.getX(), lastHit.getY()-1)){
-                        PossibleShoots pss = new PossibleShoots(lastHit.getX(), lastHit.getY()-1);
+                else {
+                    if (getEnemyBoard().isValidY(lastHit.getY() - 1) && !getEnemyBoard().wasShot(lastHit.getX(), lastHit.getY() - 1)) {
+                        PossibleShoots pss = new PossibleShoots(lastHit.getX(), lastHit.getY() - 1);
                         result = getEnemyBoard().handleShot(pss.getX(), pss.getY());
-                        if(!hasDestroyedShip(result)){
-                            if(result == ShotResult.HIT){
+                        if (!hasDestroyedShip(result)) {
+                            if (result == ShotResult.HIT) {
                                 lastHit = pss;
                                 targetIsHorizontal = false;
                                 targetIsPositive = false;
-                            }
-                            else{
+                            } else {
                                 lastHit = null;
                                 targetIsPositive = true;
                             }
                         }
-                        
-                    }else{
-                        PossibleShoots pss = new PossibleShoots(firstHit.getX(), firstHit.getY()+1);
+
+                    } else {
+                        PossibleShoots pss = new PossibleShoots(firstHit.getX(), firstHit.getY() + 1);
                         result = getEnemyBoard().handleShot(pss.getX(), pss.getY());
-                        if(!hasDestroyedShip(result)){
+                        if (!hasDestroyedShip(result)) {
                             targetIsPositive = true;
-                            if(result == ShotResult.HIT){
+                            if (result == ShotResult.HIT) {
                                 lastHit = pss;
-                            }else{
+                            } else {
                                 lastHit = null;
                             }
                         }
-                        
+
                     }
                 }
             }
@@ -186,7 +183,7 @@ public class CIDSStrategy extends RandomStrategy {
                             targetIsPositive = true;
                         }
                     }
-                    
+
                 } else if (getEnemyBoard().isValidY(firstHit.getY() + 1) && !getEnemyBoard().wasShot(firstHit.getX(), firstHit.getY() + 1)) {
                     PossibleShoots pssY = new PossibleShoots(firstHit.getX(), firstHit.getY() + 1);
                     result = getEnemyBoard().handleShot(pssY.getX(), pssY.getY());
@@ -217,7 +214,7 @@ public class CIDSStrategy extends RandomStrategy {
                             targetIsPositive = false;
                         }
                     }
-                } else{
+                } else {
                     result = getEnemyBoard().handleShot(ps.getX(), ps.getY());
                     if (result == ShotResult.HIT) {
                         isHuntingMode = true;
@@ -256,7 +253,8 @@ public class CIDSStrategy extends RandomStrategy {
         int random_y = rand.nextInt(rangeY);
         PossibleShoots ps = new PossibleShoots(random_x, random_y);
 
-        while (getEnemyBoard().wasShot(ps.getX(), ps.getY()) && ps.getX() % 2 == 0 && ps.getY() % 2 == 0) {
+        while (getEnemyBoard().wasShot(ps.getX(), ps.getY()) &&
+                (ps.getX() % 2 == 0 && ps.getY() % 2 == 0) || (ps.getX() % 2 != 0 && ps.getY() % 2 != 0)) {
             random_x = rand.nextInt(rangeX);
             random_y = rand.nextInt(rangeY);
             ps = new PossibleShoots(random_x, random_y);
