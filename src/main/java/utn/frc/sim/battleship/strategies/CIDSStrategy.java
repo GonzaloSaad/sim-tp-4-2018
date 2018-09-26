@@ -255,6 +255,7 @@ public class CIDSStrategy extends RandomStrategy {
         int random_y;
         PossibleShoots ps;
 
+
         do{
             random_x = rand.nextInt(rangeX);
             random_y = rand.nextInt(rangeY);
