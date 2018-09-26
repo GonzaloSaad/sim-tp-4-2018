@@ -59,6 +59,7 @@ public class BattleShip {
                 logger.info("Error while updating thread, finishing game. Winner: {}.", getWinner());
             } catch (Exception e){
                 logger.error(e);
+                break;
             }
         }
         return getWinner();

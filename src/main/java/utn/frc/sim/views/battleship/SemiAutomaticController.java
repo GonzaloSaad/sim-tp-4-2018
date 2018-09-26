@@ -79,8 +79,6 @@ public class SemiAutomaticController {
 
     private void initializeSpinner() {
         spnDelay.setValueFactory(getIntegerValueFactory(SPINNER_INTEGER_MIN_VALUE, SPINNER_INTEGER_MAX_VALUE));
-
-
     }
 
     private void startBoards() {
